@@ -21,13 +21,18 @@ public class PersonalStorageCommand implements CommandExecutor {
         switch (args[0]) {
             case "create":
 
+                for ( PersonalStorage ups : Bigventories.personalStorages) {
+                    if (ups.owner == player) {
+                        sender.sendMessage(ChatColor.RED + "You already have a personal storage!");
+                    }
+                }
                 PersonalStorage cps = new PersonalStorage( 1, player );
                 Bigventories.personalStorages.add(cps);
 
             case "upgrade":
                 int rowsToAdd = 1;
                 try {
-                    rowsToAdd = Integer.parseInt(args[2]);
+                    rowsToAdd = Integer.parseInt(args[1]);
                 } catch (NumberFormatException | NullPointerException ignored) { }
 
                 if (Bigventories.personalStorages.size() > 0) {
