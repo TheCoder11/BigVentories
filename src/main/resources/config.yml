@@ -1,0 +1,30 @@
+# The default number of group inventories that a player has access to:
+default-player-groups: 5
+
+# The rows each player starts with
+player-starting-rows: 0
+
+vault-pricing: true
+
+#If vault-pricing is false, then this is useless
+pricing:
+  personal-storage:
+
+    # The price that the rows start at
+    default-price: 500
+
+    # The multiplier that each additional row costs
+    price-multiplier: 1.2
+
+  chunk-storage:
+
+    default-price: 100
+
+    price-multiplier: 1.05
+
+  group-storage:
+
+    default-price: 200
+
+    price-multiplier: 1.12
+

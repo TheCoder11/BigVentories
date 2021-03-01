@@ -1,0 +1,4 @@
+name: BigVentories
+version: ${project.version}
+main: com.somemone.bigventories.Bigventories
+api-version: 1.16
