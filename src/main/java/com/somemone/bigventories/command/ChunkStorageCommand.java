@@ -2,6 +2,7 @@ package com.somemone.bigventories.command;
 
 import com.somemone.bigventories.Bigventories;
 import com.somemone.bigventories.storage.ChunkStorage;
+import com.somemone.bigventories.storage.OpenStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,11 +19,46 @@ public class ChunkStorageCommand  implements CommandExecutor {
 
         Player player = (Player) sender;
 
+        if (args.length == 0) {
+            if (Bigventories.chunkStorages.size() > 0) {
+
+                for (ChunkStorage cs : Bigventories.chunkStorages) {
+
+                    if ( cs.location == player.getLocation().getChunk()) {
+
+                        for (OpenStorage os : Bigventories.openStorages) {
+                            if (os.uuid == cs.uuid) {
+
+                                os.viewers.add(player);
+                                player.openInventory(os.inventory.get(0));
+                                return true;
+
+                            }
+                        }
+
+                        ArrayList<Inventory> inventories = cs.buildInventories();
+                        OpenStorage os = new OpenStorage(inventories, cs.uuid);
+
+                        Bigventories.openStorages.add(os);
+                        player.openInventory( os.inventory.get(0) );
+
+                        return true;
+
+                    }
+
+                }
+
+                sender.sendMessage(ChatColor.RED + "There is no Chunk Storage in this zone!");
+
+            }
+        }
+
         switch (args[0]) {
             case "create":
 
                 ChunkStorage newCS = new ChunkStorage(1, player.getLocation().getChunk());
                 Bigventories.chunkStorages.add(newCS);
+                break;
 
             case "upgrade":
 
@@ -48,55 +84,11 @@ public class ChunkStorageCommand  implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "There is no Chunk Storage in this zone! Create one first!");
 
                 }
-
-            default:
-                if (Bigventories.chunkStorages.size() > 0) {
-
-                    for (ChunkStorage cs : Bigventories.chunkStorages) {
-
-                        if ( cs.location == player.getLocation().getChunk()) {
-
-                            ArrayList<Inventory> inventories = cs.buildInventories();
-
-                            Bigventories.currentInventoryLists.put(player, inventories);
-
-                            player.openInventory( inventories.get(0) );
-
-                            return true;
-
-                        }
-
-                    }
-
-                    sender.sendMessage(ChatColor.RED + "There is no Chunk Storage in this zone!");
-
-                }
-        }
-
-
-
-
-        if (Bigventories.chunkStorages.size() > 0) {
-
-            for (ChunkStorage cs : Bigventories.chunkStorages) {
-
-                if ( cs.location == player.getLocation().getChunk()) {
-
-                    ArrayList<Inventory> inventories = cs.buildInventories();
-
-                    Bigventories.currentInventoryLists.put(player, inventories);
-
-                    player.openInventory( inventories.get(0) );
-
-                    return true;
-
-                }
-
-            }
-
-            sender.sendMessage(ChatColor.RED + "There is no Chunk Storage in this zone!");
+                break;
 
         }
+
+
 
         return false;
     }

@@ -1,6 +1,7 @@
 package com.somemone.bigventories.command;
 
 import com.somemone.bigventories.Bigventories;
+import com.somemone.bigventories.storage.OpenStorage;
 import com.somemone.bigventories.storage.PersonalStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -18,16 +19,61 @@ public class PersonalStorageCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
+        if (args.length == 0) {
+            if (Bigventories.personalStorages.size() > 0) {
+
+                for (PersonalStorage ps : Bigventories.personalStorages) {
+
+                    if (ps.owner == player) {
+
+                        // Check for open inventory
+
+                        if (Bigventories.openStorages.size() > 0) {
+                            for (OpenStorage os : Bigventories.openStorages) {
+                                if (os.uuid == ps.uuid) {
+                                    os.viewers.add(player);
+                                    player.openInventory(os.inventory.get(0));
+
+                                    return true;
+                                }
+                            }
+                        }
+
+                        ArrayList<Inventory> inventories = ps.buildInventories();
+
+                        OpenStorage openStorage = new OpenStorage( inventories, ps.uuid );
+
+                        Bigventories.openStorages.add(openStorage);
+
+                        player.openInventory( openStorage.inventory.get(0) );
+
+                        return true;
+
+                    }
+
+                }
+
+                sender.sendMessage(ChatColor.RED + "You do not own a Personal Storage!");
+                return true;
+            }
+        }
+
         switch (args[0]) {
             case "create":
 
-                for ( PersonalStorage ups : Bigventories.personalStorages) {
-                    if (ups.owner == player) {
-                        sender.sendMessage(ChatColor.RED + "You already have a personal storage!");
+                if (Bigventories.personalStorages.size() > 0) {
+                    for (PersonalStorage ups : Bigventories.personalStorages) {
+                        if (ups.owner == player) {
+                            sender.sendMessage(ChatColor.RED + "You already have a personal storage!");
+                            break;
+                        }
                     }
                 }
-                PersonalStorage cps = new PersonalStorage( 1, player );
+
+                PersonalStorage cps = new PersonalStorage(4, player);
                 Bigventories.personalStorages.add(cps);
+                sender.sendMessage(ChatColor.GREEN + "Personal Storage successfully created!");
+                break;
 
             case "upgrade":
                 int rowsToAdd = 1;
@@ -49,30 +95,11 @@ public class PersonalStorageCommand implements CommandExecutor {
 
                 }
 
-            default:
-                if (Bigventories.personalStorages.size() > 0) {
+                break;
 
-                    for (PersonalStorage ps : Bigventories.personalStorages) {
 
-                        if (ps.owner == player) {
-
-                            ArrayList<Inventory> inventories = ps.buildInventories();
-
-                            Bigventories.currentInventoryLists.put(player, inventories);
-
-                            player.openInventory( inventories.get(0) );
-
-                            return true;
-
-                        }
-
-                    }
-
-                    sender.sendMessage(ChatColor.RED + "You do not own a Personal Storage!");
-
-                }
         }
 
-        return false;
+        return true;
     }
 }
