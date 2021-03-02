@@ -116,6 +116,8 @@ public class InventoryListener implements Listener {
 
                                 totalItems.addAll(items);
                             }
+
+                            st.items = totalItems;
                         }
 
                     } else {
