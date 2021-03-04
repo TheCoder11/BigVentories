@@ -33,7 +33,6 @@ public class GroupStorageCommand implements CommandExecutor {
                         for (OpenStorage os : Bigventories.openStorages) {
 
                             if (os.uuid == cs.uuid) {
-                                os.viewers.add(player);
                                 player.openInventory(os.inventory.get(0));
                                 return true;
                             }

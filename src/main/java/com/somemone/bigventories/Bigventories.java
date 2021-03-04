@@ -18,19 +18,19 @@ import java.util.HashMap;
 
 public final class Bigventories extends JavaPlugin {
 
-    public static HashMap<Player, HashMap<String, ArrayList<Inventory>>> currentInventoryLists;
     public static ArrayList<OpenStorage> openStorages;
+
     public static ArrayList<PersonalStorage> personalStorages;
     public static ArrayList<ChunkStorage> chunkStorages;
     public static ArrayList<GroupStorage> groupStorages;
 
     @Override
     public void onEnable() {
-
-        currentInventoryLists = new HashMap<>();
+        
         personalStorages = new ArrayList<>();
         chunkStorages = new ArrayList<>();
         groupStorages = new ArrayList<>();
+        openStorages = new ArrayList<>();
 
          getServer().getPluginManager().registerEvents(new InventoryListener(), this);
 

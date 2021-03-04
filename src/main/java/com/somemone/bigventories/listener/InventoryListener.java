@@ -2,6 +2,8 @@ package com.somemone.bigventories.listener;
 
 import com.somemone.bigventories.Bigventories;
 import com.somemone.bigventories.storage.*;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -23,56 +25,62 @@ public class InventoryListener implements Listener {
             ArrayList<Inventory> playerInventories = null;
 
             for (OpenStorage os : Bigventories.openStorages) {
-                if (os.viewers.contains(event.getWhoClicked())) {
+                if (os.checkIfViewing((Player) event.getWhoClicked())) {
 
                     playerInventories = os.inventory;
                     break;
 
-                } else {
-                    return;
                 }
             }
 
-            if ( event.getCurrentItem().equals(Storage.nextButton)) {
+            if (playerInventories == null) {
 
-                if ( playerInventories != null && playerInventories.contains(event.getInventory()) ) {
+                return;
+            }
 
-                    if ( playerInventories.indexOf(event.getInventory()) < (playerInventories.size() - 1)) {
-                        Inventory selectedInventory = playerInventories.get(playerInventories.indexOf( event.getInventory() ) + 1 );
-                        event.getWhoClicked().closeInventory();
-                        event.getWhoClicked().openInventory(selectedInventory);
+            if (event.getCurrentItem() != null) {
+
+                    if (playerInventories != null && playerInventories.contains(event.getInventory())) {
+
+                        if (playerInventories.indexOf(event.getInventory()) < (playerInventories.size() - 1)) {
+                            Inventory selectedInventory = playerInventories.get(playerInventories.indexOf(event.getInventory()) + 1);
+                            try {
+                                event.getWhoClicked().openInventory(selectedInventory);
+                            } catch (ArrayIndexOutOfBoundsException ignored) { }
+                        }
+
+
                     }
+                    event.setCancelled(true);
 
 
+                } else if (event.getCurrentItem().equals(Storage.prevButton)) {
 
-                }
-                event.setCancelled(true);
+                    if (playerInventories != null && playerInventories.contains(event.getInventory())) {
 
+                        if (playerInventories.indexOf(event.getInventory()) > 0) {
+                            Inventory selectedInventory = playerInventories.get(playerInventories.indexOf(event.getInventory()) - 1);
+                            try {
+                                event.getWhoClicked().openInventory(selectedInventory);
+                            } catch (ArrayIndexOutOfBoundsException ignored) { }
+                        }
 
-            } else if (event.getCurrentItem().equals(Storage.prevButton)) {
+                        event.setCancelled(true);
 
-                if ( playerInventories != null && playerInventories.contains(event.getInventory()) ) {
-
-                    if ( playerInventories.indexOf(event.getInventory()) > 0) {
-                        Inventory selectedInventory = playerInventories.get(playerInventories.indexOf( event.getInventory() ) - 1 );
-                        event.getWhoClicked().openInventory(selectedInventory);
                     }
 
                     event.setCancelled(true);
 
+                } else if (event.getCurrentItem().equals(Storage.glassPane)) {
+
+                    event.setCancelled(true);
+
                 }
-
-                event.setCancelled(true);
-
-            } else if (event.getCurrentItem().equals(Storage.glassPane)) {
-
-                event.setCancelled(true);
-
             }
 
         }
 
-    }
+
 
     @EventHandler
     public void onInventoryClose (InventoryCloseEvent event) {
@@ -81,9 +89,9 @@ public class InventoryListener implements Listener {
 
             for (OpenStorage os : Bigventories.openStorages) {
 
-                if (os.viewers.contains(event.getPlayer())) {
+                if (os.checkIfViewing((Player) event.getPlayer())) {
 
-                    if (os.viewers.size() == 1) {  // Player is the only viewer of the inventory
+                    if (os.getViewers().size() == 1) {  // Player is the only viewer of the inventory
 
                         Storage st = null;
                         for (PersonalStorage ps : Bigventories.personalStorages) {
@@ -103,25 +111,31 @@ public class InventoryListener implements Listener {
                         }
 
                         if (st != null) {
+                            if ( !(event.getPlayer().getOpenInventory().getTitle().equals("Storage") )) {
+                                event.getPlayer().sendMessage("Removed from UUID!");
 
-                            ArrayList<ItemStack> totalItems = new ArrayList<>();
+                                ArrayList<ItemStack> totalItems = new ArrayList<>();
 
-                            for (Inventory inv : os.inventory) {
-                                ArrayList<ItemStack> items = (ArrayList<ItemStack>) Arrays.asList(inv.getContents());
+                                for (Inventory inv : os.inventory) {
+                                    ArrayList<ItemStack> items = new ArrayList<>();
+                                    if (inv.getContents().length > 0) {
+                                        for (ItemStack item : inv.getContents()) {
+                                            items.add(item);
+                                        }
+                                    }
 
-                                int removed = 0;
-                                while ( removed < 9 ) {
-                                    items.remove( items.size() - 1 );
+                                    int removed = 0;
+                                    while (removed < 9) {
+                                        items.remove(items.size() - 1);
+                                    }
+
+                                    totalItems.addAll(items);
                                 }
 
-                                totalItems.addAll(items);
+                                st.items = totalItems;
                             }
-
-                            st.items = totalItems;
                         }
 
-                    } else {
-                        os.viewers.remove(event.getPlayer());
                     }
 
                 }

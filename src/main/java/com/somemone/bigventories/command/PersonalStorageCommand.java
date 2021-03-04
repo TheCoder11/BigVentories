@@ -31,7 +31,6 @@ public class PersonalStorageCommand implements CommandExecutor {
                         if (Bigventories.openStorages.size() > 0) {
                             for (OpenStorage os : Bigventories.openStorages) {
                                 if (os.uuid == ps.uuid) {
-                                    os.viewers.add(player);
                                     player.openInventory(os.inventory.get(0));
 
                                     return true;
@@ -70,7 +69,7 @@ public class PersonalStorageCommand implements CommandExecutor {
                     }
                 }
 
-                PersonalStorage cps = new PersonalStorage(4, player);
+                PersonalStorage cps = new PersonalStorage(7, player);
                 Bigventories.personalStorages.add(cps);
                 sender.sendMessage(ChatColor.GREEN + "Personal Storage successfully created!");
                 break;

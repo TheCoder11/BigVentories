@@ -62,7 +62,7 @@ public class Storage {
 
             int invSize;
             if ( localRows > 5 ) {
-                invSize = 56;
+                invSize = 54;
                 localRows = localRows - 5;
             } else {
                 invSize = ((int) localRows * 9) + 9;

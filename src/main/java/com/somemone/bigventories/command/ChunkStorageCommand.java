@@ -29,7 +29,6 @@ public class ChunkStorageCommand  implements CommandExecutor {
                         for (OpenStorage os : Bigventories.openStorages) {
                             if (os.uuid == cs.uuid) {
 
-                                os.viewers.add(player);
                                 player.openInventory(os.inventory.get(0));
                                 return true;
 
@@ -49,6 +48,7 @@ public class ChunkStorageCommand  implements CommandExecutor {
                 }
 
                 sender.sendMessage(ChatColor.RED + "There is no Chunk Storage in this zone!");
+                return true;
 
             }
         }
@@ -57,6 +57,17 @@ public class ChunkStorageCommand  implements CommandExecutor {
             case "create":
 
                 ChunkStorage newCS = new ChunkStorage(1, player.getLocation().getChunk());
+
+                for (ChunkStorage cs : Bigventories.chunkStorages) {
+
+                    if (cs.uuid == newCS.uuid) {
+
+                        sender.sendMessage(ChatColor.RED + "A Chunk Storage already exists in this area!");
+
+                    }
+
+                }
+
                 Bigventories.chunkStorages.add(newCS);
                 break;
 
@@ -67,7 +78,7 @@ public class ChunkStorageCommand  implements CommandExecutor {
                 int rowsToAdd = 1;
                 try {
                     rowsToAdd = Integer.parseInt(args[1]);
-                } catch (NumberFormatException | NullPointerException ignored) { }
+                } catch (NumberFormatException | ArrayIndexOutOfBoundsException ignored) { }
 
                 if (Bigventories.chunkStorages.size() > 0) {
 
@@ -90,6 +101,6 @@ public class ChunkStorageCommand  implements CommandExecutor {
 
 
 
-        return false;
+        return true;
     }
 }
