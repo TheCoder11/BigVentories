@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class Storage {
 
@@ -22,24 +23,27 @@ public class Storage {
 
     public ArrayList<ItemStack> items;
     public int rows;
+    public UUID uuid;
 
     public Storage (int rows) {
         this.rows = rows;
+        items = new ArrayList<>();
+        this.uuid = UUID.randomUUID();
 
-        nextButton.setType(Material.ARROW);
+        nextButton = new ItemStack(Material.ARROW);
         ItemMeta nBMeta = nextButton.getItemMeta();
         nBMeta.setDisplayName(ChatColor.GREEN + "NEXT PAGE");
         nextButton.setItemMeta(nBMeta);
 
-        prevButton.setType(Material.ARROW);
+        prevButton = new ItemStack(Material.ARROW);
         ItemMeta pBMeta = prevButton.getItemMeta();
         pBMeta.setDisplayName(ChatColor.RED + "PREVIOUS PAGE");
         prevButton.setItemMeta(pBMeta);
 
-        glassPane.setType(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+        glassPane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta gPMeta = glassPane.getItemMeta();
         gPMeta.setDisplayName(ChatColor.GOLD + "|");
-        glassPane.setItemMeta(pBMeta);
+        glassPane.setItemMeta(gPMeta);
     }
 
     private boolean checkRows() {
@@ -47,21 +51,23 @@ public class Storage {
         return maxSize <= this.items.size();
     }
 
-    public ArrayList<Inventory> buildInventories () {
+    public ArrayList<Inventory> buildInventories ( ) {
+
+        Bukkit.broadcastMessage("Inventory built!");
 
         ArrayList<Inventory> inventories = new ArrayList<>();
-        int localRows = this.rows;
-        ArrayList<ItemStack> localItems = new ArrayList<>();
+        double localRows = this.rows;
+        ArrayList<ItemStack> localItems = this.items;
         int neededInventory = (int) Math.ceil(localRows / 5);
 
         for ( int i = 0; i < neededInventory; i++) {
 
             int invSize;
             if ( localRows > 5 ) {
-                invSize = 56;
-                localRows =- 5;
+                invSize = 54;
+                localRows = localRows - 5;
             } else {
-                invSize = (localRows * 9) + 9;
+                invSize = ((int) localRows * 9) + 9;
                 localRows = 0;
             }
 
@@ -71,20 +77,22 @@ public class Storage {
 
             for ( int a = 0; a < itemNumber; a++) {
 
-                inv.addItem( localItems.get(0) );
-                localItems.remove(0);
+                if (localItems.size() > 0) {
+                    inv.addItem(localItems.get(0));
+                    localItems.remove(0);
+                }
 
             }
 
-            inv.setItem( invSize - 8, prevButton);
+            inv.setItem( invSize - 9, prevButton);
+            inv.setItem( invSize - 8, glassPane);
             inv.setItem( invSize - 7, glassPane);
             inv.setItem( invSize - 6, glassPane);
             inv.setItem( invSize - 5, glassPane);
             inv.setItem( invSize - 4, glassPane);
             inv.setItem( invSize - 3, glassPane);
             inv.setItem( invSize - 2, glassPane);
-            inv.setItem( invSize - 1, glassPane);
-            inv.setItem( invSize          , nextButton);
+            inv.setItem( invSize - 1, nextButton);
 
             inventories.add( inv ) ;
 

@@ -14,6 +14,8 @@ public class GroupStorage extends Storage {
         super(rows);
 
         this.owner = owner;
+        this.accessList = new ArrayList<>();
+        this.accessList.add(owner);
         this.name = name;
     }
 

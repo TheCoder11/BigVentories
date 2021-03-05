@@ -2,3 +2,21 @@ name: BigVentories
 version: ${project.version}
 main: com.somemone.bigventories.Bigventories
 api-version: 1.16
+
+commands:
+  cstorage:
+    description: View, Create, or Upgrade your Chunk Storage
+    aliases: [cs, chunkstorage]
+    usage: "Usage: /<command> [upgrade|create]"
+
+  pstorage:
+    description: View, Create, or Upgrade your Personal Storage
+    aliases: [ps, personalstorage]
+    usage: "Usage: /<command> [upgrade|create]"
+
+  gstorage:
+    description: Manage, View, and Create your Group Storage(s)!
+    aliases: [gs, groupstorage]
+    usage: "Usage: /<command> [create|remove|invite|setowner|upgrade]"
+
+

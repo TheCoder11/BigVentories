@@ -5,16 +5,18 @@ import org.bukkit.entity.Player;
 
 public class ChunkStorage extends Storage {
 
-    public Chunk location;
+    public int x;
+    public int z;
 
-    public ChunkStorage(int rows, Chunk location) {
+    public ChunkStorage(int rows, int x, int z) {
         super(rows);
 
-        this.location = location;
+        this.x = x;
+        this.z = z;
     }
 
-    public boolean checkIfInChunk ( Player player ) {
-        return player.getLocation().getChunk() == this.location;
+    public boolean checkChunk( Chunk chunk ) {
+        return chunk.getX() == this.x && chunk.getZ() == this.z;
     }
 
 }
