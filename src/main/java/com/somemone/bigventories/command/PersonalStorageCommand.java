@@ -44,6 +44,8 @@ public class PersonalStorageCommand implements CommandExecutor {
 
                         Bigventories.openStorages.add(openStorage);
 
+                        sender.sendMessage(String.valueOf(ps.rows));
+
                         player.openInventory( openStorage.inventory.get(0) );
 
                         return true;
@@ -51,10 +53,9 @@ public class PersonalStorageCommand implements CommandExecutor {
                     }
 
                 }
-
-                sender.sendMessage(ChatColor.RED + "You do not own a Personal Storage!");
-                return true;
             }
+            sender.sendMessage(ChatColor.RED + "You do not own a Personal Storage!");
+            return true;
         }
 
         switch (args[0]) {
@@ -64,7 +65,7 @@ public class PersonalStorageCommand implements CommandExecutor {
                     for (PersonalStorage ups : Bigventories.personalStorages) {
                         if (ups.owner == player) {
                             sender.sendMessage(ChatColor.RED + "You already have a personal storage!");
-                            break;
+                            return true;
                         }
                     }
                 }

@@ -24,7 +24,7 @@ public class ChunkStorageCommand  implements CommandExecutor {
 
                 for (ChunkStorage cs : Bigventories.chunkStorages) {
 
-                    if ( cs.location == player.getLocation().getChunk()) {
+                    if ( cs.checkChunk(player.getLocation().getChunk())) {
 
                         for (OpenStorage os : Bigventories.openStorages) {
                             if (os.uuid == cs.uuid) {
@@ -56,13 +56,14 @@ public class ChunkStorageCommand  implements CommandExecutor {
         switch (args[0]) {
             case "create":
 
-                ChunkStorage newCS = new ChunkStorage(1, player.getLocation().getChunk());
+                ChunkStorage newCS = new ChunkStorage(1, player.getLocation().getChunk().getX(), player.getLocation().getChunk().getZ());
 
                 for (ChunkStorage cs : Bigventories.chunkStorages) {
 
                     if (cs.uuid == newCS.uuid) {
 
                         sender.sendMessage(ChatColor.RED + "A Chunk Storage already exists in this area!");
+                        return true;
 
                     }
 
@@ -84,7 +85,7 @@ public class ChunkStorageCommand  implements CommandExecutor {
 
                     for (ChunkStorage upcs : Bigventories.chunkStorages) {
 
-                        if ( upcs.location == player.getLocation().getChunk()) {
+                        if ( upcs.checkChunk(player.getLocation().getChunk())) {
 
                             upcs.rows = upcs.rows + rowsToAdd;
 

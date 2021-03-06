@@ -2,19 +2,32 @@ package com.somemone.bigventories.storage;
 
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class ChunkStorage extends Storage {
 
-    public Chunk location;
+    public int x;
+    public int z;
 
-    public ChunkStorage(int rows, Chunk location) {
+    public ChunkStorage(int rows, int x, int z) {
         super(rows);
 
-        this.location = location;
+        this.x = x;
+        this.z = z;
     }
 
-    public boolean checkIfInChunk ( Player player ) {
-        return player.getLocation().getChunk() == this.location;
+    public ChunkStorage(int rows, UUID uuid, ArrayList<ItemStack> items, int x, int z) {
+        super(rows, uuid, items);
+
+        this.x = x;
+        this.z = z;
+    }
+
+    public boolean checkChunk( Chunk chunk ) {
+        return chunk.getX() == this.x && chunk.getZ() == this.z;
     }
 
 }
