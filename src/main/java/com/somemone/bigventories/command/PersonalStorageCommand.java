@@ -31,7 +31,6 @@ public class PersonalStorageCommand implements CommandExecutor {
                         if (Bigventories.openStorages.size() > 0) {
                             for (OpenStorage os : Bigventories.openStorages) {
                                 if (os.uuid == ps.uuid) {
-                                    sender.sendMessage("Found an Open Storage!");
                                     player.openInventory(os.inventory.get(0));
 
                                     return true;
@@ -44,6 +43,8 @@ public class PersonalStorageCommand implements CommandExecutor {
                         OpenStorage openStorage = new OpenStorage( inventories, ps.uuid );
 
                         Bigventories.openStorages.add(openStorage);
+
+                        sender.sendMessage(String.valueOf(ps.rows));
 
                         player.openInventory( openStorage.inventory.get(0) );
 
@@ -64,7 +65,7 @@ public class PersonalStorageCommand implements CommandExecutor {
                     for (PersonalStorage ups : Bigventories.personalStorages) {
                         if (ups.owner == player) {
                             sender.sendMessage(ChatColor.RED + "You already have a personal storage!");
-                            break;
+                            return true;
                         }
                     }
                 }

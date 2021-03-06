@@ -63,6 +63,7 @@ public class ChunkStorageCommand  implements CommandExecutor {
                     if (cs.uuid == newCS.uuid) {
 
                         sender.sendMessage(ChatColor.RED + "A Chunk Storage already exists in this area!");
+                        return true;
 
                     }
 
