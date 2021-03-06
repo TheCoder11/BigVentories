@@ -46,14 +46,33 @@ public class Storage {
         glassPane.setItemMeta(gPMeta);
     }
 
+    public Storage (int rows, UUID uuid, ArrayList<ItemStack> items) {
+        this.rows = rows;
+        this.items = items;
+        this.uuid = uuid;
+
+        nextButton = new ItemStack(Material.ARROW);
+        ItemMeta nBMeta = nextButton.getItemMeta();
+        nBMeta.setDisplayName(ChatColor.GREEN + "NEXT PAGE");
+        nextButton.setItemMeta(nBMeta);
+
+        prevButton = new ItemStack(Material.ARROW);
+        ItemMeta pBMeta = prevButton.getItemMeta();
+        pBMeta.setDisplayName(ChatColor.RED + "PREVIOUS PAGE");
+        prevButton.setItemMeta(pBMeta);
+
+        glassPane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta gPMeta = glassPane.getItemMeta();
+        gPMeta.setDisplayName(ChatColor.GOLD + "|");
+        glassPane.setItemMeta(gPMeta);
+    }
+
     private boolean checkRows() {
         int maxSize = this.rows * 9;
         return maxSize <= this.items.size();
     }
 
     public ArrayList<Inventory> buildInventories ( ) {
-
-        Bukkit.broadcastMessage("Inventory built!");
 
         ArrayList<Inventory> inventories = new ArrayList<>();
         double localRows = this.rows;

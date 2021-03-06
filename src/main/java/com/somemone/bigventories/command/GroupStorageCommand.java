@@ -87,19 +87,22 @@ public class GroupStorageCommand implements CommandExecutor {
                 if (args.length == 3) {
 
                     if (Bigventories.groupStorages.size() > 0) {
+
                         for (GroupStorage fgs : Bigventories.groupStorages) {
+                            if (fgs.name.equals(args[2])) {
+                                if (fgs.owner == player) {
 
-                            if (fgs.name.equals(args[2]) && fgs.owner == player) {
+                                    sender.sendMessage("Got here!");
+                                    fgs.accessList.add(Bukkit.getPlayer(args[1]));
+                                    return true;
 
-                                fgs.accessList.add(Bukkit.getPlayer(args[1]));
-                                return true;
+                                } else {
 
-                            } else {
+                                    sender.sendMessage(ChatColor.RED + "You do not have access to this storage!");
 
-                                sender.sendMessage(ChatColor.RED + "You do not have access to this storage!");
+                                }
 
                             }
-
                         }
                     }
 
@@ -116,14 +119,16 @@ public class GroupStorageCommand implements CommandExecutor {
                             if (fgs.name.equals(args[1])) {
 
                                 sender.sendMessage(ChatColor.RED + "A Group Storage with this name already exists!");
-                                return false;
+                                return true;
 
                             }
 
                         }
                     }
 
+                    newGS.accessList.add(player);
                     Bigventories.groupStorages.add(newGS);
+
                 }
                 break;
             case "remove":   // /gs remove player123

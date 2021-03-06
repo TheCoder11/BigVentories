@@ -1,8 +1,10 @@
 package com.somemone.bigventories.storage;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class GroupStorage extends Storage {
 
@@ -15,6 +17,15 @@ public class GroupStorage extends Storage {
 
         this.owner = owner;
         this.accessList = new ArrayList<>();
+        this.accessList.add(owner);
+        this.name = name;
+    }
+
+    public GroupStorage(String name, int rows, ArrayList<ItemStack> items, Player owner, UUID uuid, ArrayList<Player> accessList) {
+        super(rows, uuid, items);
+
+        this.owner = owner;
+        this.accessList = accessList;
         this.accessList.add(owner);
         this.name = name;
     }

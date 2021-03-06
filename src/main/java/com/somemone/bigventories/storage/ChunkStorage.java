@@ -2,6 +2,10 @@ package com.somemone.bigventories.storage;
 
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class ChunkStorage extends Storage {
 
@@ -10,6 +14,13 @@ public class ChunkStorage extends Storage {
 
     public ChunkStorage(int rows, int x, int z) {
         super(rows);
+
+        this.x = x;
+        this.z = z;
+    }
+
+    public ChunkStorage(int rows, UUID uuid, ArrayList<ItemStack> items, int x, int z) {
+        super(rows, uuid, items);
 
         this.x = x;
         this.z = z;
