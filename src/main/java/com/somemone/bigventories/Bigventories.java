@@ -125,7 +125,10 @@ public final class Bigventories extends JavaPlugin {
 
             ItemStack[] items = ps.items.toArray(new ItemStack[0]);
             String uuid = ps.uuid.toString();
-            String owner = ps.owner.getUniqueId().toString();
+            String owner = "";
+            try {
+                owner = ps.owner.getUniqueId().toString();
+            } catch (NullPointerException ignored) {}
 
             con.set("pstorages." + uuid + ".contents", items);
             con.set("pstorages." + uuid + ".owner", owner);
@@ -170,82 +173,89 @@ public final class Bigventories extends JavaPlugin {
     public void loadStorages () throws IOException, InvalidConfigurationException {
         YamlConfiguration con = new YamlConfiguration();
         con.load( new File( this.getDataFolder(), "storages.yml"));
+        ArrayList<String> keys;
 
         // load PersonalStorages
 
-        ConfigurationSection pStorages = con.getConfigurationSection("pstorages");
+        if (con.contains("pstorages")) {
+            ConfigurationSection pStorages = con.getConfigurationSection("pstorages");
 
-        ArrayList<String> keys = new ArrayList<>();
-        if ( pStorages.getKeys(false) != null) {
-            keys.addAll(pStorages.getKeys(false));
+            keys = new ArrayList<>();
+            if (pStorages.getKeys(false) != null) {
+                keys.addAll(pStorages.getKeys(false));
 
-            for (String key : keys) {
+                for (String key : keys) {
 
-                UUID uuid = UUID.fromString(key);
+                    UUID uuid = UUID.fromString(key);
 
-                Player owner = Bukkit.getPlayer(UUID.fromString(pStorages.getString(key + ".owner")));
+                    Player owner = Bukkit.getPlayer(UUID.fromString(pStorages.getString(key + ".owner")));
 
-                ArrayList<ItemStack> contents = (ArrayList<ItemStack>) pStorages.getList(key + ".contents");
+                    ArrayList<ItemStack> contents = (ArrayList<ItemStack>) pStorages.getList(key + ".contents");
 
-                int rows = pStorages.getInt(key + ".rows");
+                    int rows = pStorages.getInt(key + ".rows");
 
-                Bigventories.personalStorages.add(new PersonalStorage(rows, uuid, owner, contents));
+                    Bigventories.personalStorages.add(new PersonalStorage(rows, uuid, owner, contents));
 
+                }
             }
         }
         // load ChunkStorages
 
-        ConfigurationSection cStorages = con.getConfigurationSection("cstorages");
+        if (con.contains("cstorages")) {
+            ConfigurationSection cStorages = con.getConfigurationSection("cstorages");
 
-        keys = new ArrayList<>();
-        if ( cStorages.getKeys(false) != null) {
-            keys.addAll(cStorages.getKeys(false));
+            keys = new ArrayList<>();
+            if (cStorages.getKeys(false) != null) {
+                keys.addAll(cStorages.getKeys(false));
 
-            for (String key : keys) {
+                for (String key : keys) {
 
-                UUID uuid = UUID.fromString(key);
+                    UUID uuid = UUID.fromString(key);
 
-                ArrayList<ItemStack> contents = (ArrayList<ItemStack>) cStorages.getList(key + ".contents");
+                    ArrayList<ItemStack> contents = (ArrayList<ItemStack>) cStorages.getList(key + ".contents");
 
-                int rows = cStorages.getInt(key + ".rows");
+                    int rows = cStorages.getInt(key + ".rows");
 
-                int x = cStorages.getInt(key + ".xpos");
+                    int x = cStorages.getInt(key + ".xpos");
 
-                int z = cStorages.getInt(key + ".zpos");
+                    int z = cStorages.getInt(key + ".zpos");
 
-                Bigventories.chunkStorages.add(new ChunkStorage(rows, uuid, contents, x, z));
+                    Bigventories.chunkStorages.add(new ChunkStorage(rows, uuid, contents, x, z));
 
+                }
             }
         }
         // load GroupStorages
 
         ConfigurationSection gStorages = con.getConfigurationSection("gstorages");
 
-        keys = new ArrayList<>();
-        if ( gStorages.getKeys(false) != null) {
-            keys.addAll(gStorages.getKeys(false));
+        if (con.contains("gstorages")) {
+            keys = new ArrayList<>();
+            if (gStorages.getKeys(false) != null) {
+                keys.addAll(gStorages.getKeys(false));
 
-            for (String key : keys) {
+                for (String key : keys) {
 
-                UUID uuid = UUID.fromString(key);
+                    UUID uuid = UUID.fromString(key);
 
-                ArrayList<ItemStack> contents = (ArrayList<ItemStack>) gStorages.getList(key + ".contents");
+                    ArrayList<ItemStack> contents = (ArrayList<ItemStack>) gStorages.getList(key + ".contents");
 
-                int rows = gStorages.getInt(key + ".rows");
+                    int rows = gStorages.getInt(key + ".rows");
 
-                Player owner = Bukkit.getPlayer(UUID.fromString(gStorages.getString(key + ".owner")));
+                    Player owner = Bukkit.getPlayer(UUID.fromString(gStorages.getString(key + ".owner")));
 
-                ArrayList<String> accessStringList = (ArrayList<String>) gStorages.getStringList(key + ".players");
+                    ArrayList<String> accessStringList = (ArrayList<String>) gStorages.getStringList(key + ".players");
 
-                ArrayList<Player> accessList = new ArrayList<>();
-                for (String player : accessStringList) {
-                    accessList.add(Bukkit.getPlayer(UUID.fromString(player)));
+                    ArrayList<Player> accessList = new ArrayList<>();
+                    for (String player : accessStringList) {
+                        accessList.add(Bukkit.getPlayer(UUID.fromString(player)));
+                    }
+
+                    String name = gStorages.getString(key + ".name");
+
+                    Bigventories.groupStorages.add(new GroupStorage(name, rows, contents, owner, uuid, accessList));
+
                 }
-
-                String name = gStorages.getString(key + ".name");
-
-                Bigventories.groupStorages.add(new GroupStorage(name, rows, contents, owner, uuid, accessList));
-
             }
         }
 

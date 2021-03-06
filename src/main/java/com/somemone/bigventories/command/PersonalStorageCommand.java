@@ -44,8 +44,6 @@ public class PersonalStorageCommand implements CommandExecutor {
 
                         Bigventories.openStorages.add(openStorage);
 
-                        sender.sendMessage(String.valueOf(ps.rows));
-
                         player.openInventory( openStorage.inventory.get(0) );
 
                         return true;
