@@ -5,18 +5,60 @@ api-version: 1.16
 
 commands:
   cstorage:
-    description: View, Create, or Upgrade your Chunk Storage
+    description: Manage your Chunk Storage
     aliases: [cs, chunkstorage]
-    usage: "Usage: /<command> [upgrade|create]"
+    usage: "Usage: /cstorage [upgrade|create]"
 
   pstorage:
-    description: View, Create, or Upgrade your Personal Storage
+    description: Manage your Personal Storage
     aliases: [ps, personalstorage]
-    usage: "Usage: /<command> [upgrade|create]"
+    usage: "Usage: /pstorage [upgrade|create]"
 
   gstorage:
-    description: Manage, View, and Create your Group Storage(s)!
+    description: Manage your Group Storage(s)
     aliases: [gs, groupstorage]
-    usage: "Usage: /<command> [create|remove|invite|setowner|upgrade]"
+    usage: "Usage: /gstorage [create|remove|invite|setowner|upgrade]"
+
+  bvadmin:
+    description: Admin Commands for BigVentories
+    aliases: bva
+    usage: "Usage: /bvadmin [save|load|view|delete]"
+    permission: "bva.use"
+
+permissions:
+  bva.use:
+    description: Allows you to use the /bva command
+    default: op
+
+  bva.view:
+    description: Allows you to view all types of inventories.
+    default: op
+
+  bva.delete:
+    description: Allows the player to delete inventories
+    default: op
+
+  bva.save:
+    description: Allows the player to save the game
+    default: op
+
+  bva.load:
+    description: Allows the player to load the game
+    default: op
+
+  bva.*:
+    description: Allows you to use all bva commands
+    default: op
+    children:
+      bva.view: true
+      bva.use: true
+      bva.delete: true
+      bva.save: true
+      bva.load: true
+
+
+
+
+
 
 

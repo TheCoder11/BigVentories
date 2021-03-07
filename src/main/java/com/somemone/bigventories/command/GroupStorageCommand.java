@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class GroupStorageCommand implements CommandExecutor {
@@ -73,6 +74,7 @@ public class GroupStorageCommand implements CommandExecutor {
                         if (upgs.name.equals(args[1])) {
 
                             upgs.rows = upgs.rows + rowsToAdd;
+                            sender.sendMessage(ChatColor.GREEN + "Group Storage was upgraded!");
 
                         }
 
@@ -82,18 +84,18 @@ public class GroupStorageCommand implements CommandExecutor {
 
                 }
 
-            case "invite":   // /gs invite player123
+            case "invite":   // /gs invite [group-name] [players]
 
                 if (args.length == 3) {
 
                     if (Bigventories.groupStorages.size() > 0) {
 
                         for (GroupStorage fgs : Bigventories.groupStorages) {
-                            if (fgs.name.equals(args[2])) {
+                            if (fgs.name.equals(args[1])) {
                                 if (fgs.owner == player) {
 
-                                    sender.sendMessage("Got here!");
-                                    fgs.accessList.add(Bukkit.getPlayer(args[1]));
+                                    sender.sendMessage(ChatColor.GREEN + args[2] + " was invited to the Group!");
+                                    fgs.accessList.add(Bukkit.getPlayer(args[2]));
                                     return true;
 
                                 } else {
@@ -128,6 +130,7 @@ public class GroupStorageCommand implements CommandExecutor {
 
                     newGS.accessList.add(player);
                     Bigventories.groupStorages.add(newGS);
+                    sender.sendMessage(ChatColor.GREEN + "Group Storage successfully created!");
 
                 }
                 break;
@@ -143,6 +146,7 @@ public class GroupStorageCommand implements CommandExecutor {
 
                                 if (fgs.accessList.contains(Bukkit.getPlayer(args[1]))) {
                                     fgs.accessList.remove(Bukkit.getPlayer(args[1]));
+                                    sender.sendMessage(ChatColor.GREEN + args[1] + " has been removed from the Group!");
                                     return true;
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "Player not in group");
@@ -170,6 +174,7 @@ public class GroupStorageCommand implements CommandExecutor {
                             if (fgs.name.equals(args[1]) && fgs.owner == player) {
 
                                 fgs.owner = Bukkit.getPlayer(args[2]);
+                                sender.sendMessage(ChatColor.GREEN + args[2] + " is now the owner of the Group!");
 
                             }
 
@@ -178,6 +183,28 @@ public class GroupStorageCommand implements CommandExecutor {
 
                 }
                 break;
+
+            case "delete":
+
+                if (args.length == 2) {
+
+                    if (Bigventories.groupStorages.size() > 0) {
+                        GroupStorage storageToDelete = null;
+                        for (GroupStorage fgs : Bigventories.groupStorages) {
+                            if (fgs.name.equals(args[1]) && fgs.owner == player) {
+                                storageToDelete = fgs;
+                            }
+                        }
+
+                        if (storageToDelete != null) {
+                            Bigventories.groupStorages.remove(storageToDelete);
+                            sender.sendMessage(ChatColor.GREEN + storageToDelete.name + " successfully removed!");
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "You do not have access to this group!");
+                        }
+                    }
+
+                }
         }
 
         return true;

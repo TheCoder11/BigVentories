@@ -2,22 +2,16 @@ package com.somemone.bigventories.listener;
 
 import com.somemone.bigventories.Bigventories;
 import com.somemone.bigventories.storage.*;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.UUID;
 
 public class InventoryListener implements Listener {
 

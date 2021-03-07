@@ -70,6 +70,7 @@ public class ChunkStorageCommand  implements CommandExecutor {
                 }
 
                 Bigventories.chunkStorages.add(newCS);
+                sender.sendMessage(ChatColor.GREEN + "Chunk Storage successfully created!");
                 break;
 
             case "upgrade":

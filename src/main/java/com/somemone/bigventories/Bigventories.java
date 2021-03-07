@@ -1,5 +1,6 @@
 package com.somemone.bigventories;
 
+import com.somemone.bigventories.command.AdminCommand;
 import com.somemone.bigventories.command.ChunkStorageCommand;
 import com.somemone.bigventories.command.GroupStorageCommand;
 import com.somemone.bigventories.command.PersonalStorageCommand;
@@ -35,6 +36,8 @@ public final class Bigventories extends JavaPlugin {
 
     public static ArrayList<Player> closedByPlugin;
 
+    public static File dataFolder;
+
     @Override
     public void onEnable() {
         
@@ -43,12 +46,14 @@ public final class Bigventories extends JavaPlugin {
         groupStorages = new ArrayList<>();
         openStorages = new ArrayList<>();
         closedByPlugin = new ArrayList<>();
+        dataFolder = this.getDataFolder();
 
          getServer().getPluginManager().registerEvents(new InventoryListener(), this);
 
          getCommand("pstorage").setExecutor(new PersonalStorageCommand());
          getCommand("cstorage").setExecutor(new ChunkStorageCommand());
          getCommand("gstorage").setExecutor(new GroupStorageCommand());
+         getCommand("bvadmin").setExecutor(new AdminCommand());
 
         try {
             loadStorages();
@@ -71,7 +76,7 @@ public final class Bigventories extends JavaPlugin {
 
 
 
-    public void saveStorages () throws IOException {
+    public static void saveStorages () throws IOException {
         // Closing all OpenStorages to permanent storage
 
         for (OpenStorage os : Bigventories.openStorages) {
@@ -167,12 +172,12 @@ public final class Bigventories extends JavaPlugin {
 
         }
 
-        con.save( new File (this.getDataFolder(), "storages.yml"));
+        con.save( new File (Bigventories.dataFolder, "storages.yml"));
     }
 
-    public void loadStorages () throws IOException, InvalidConfigurationException {
+    public static void loadStorages () throws IOException, InvalidConfigurationException {
         YamlConfiguration con = new YamlConfiguration();
-        con.load( new File( this.getDataFolder(), "storages.yml"));
+        con.load( new File( Bigventories.dataFolder, "storages.yml"));
         ArrayList<String> keys;
 
         // load PersonalStorages
