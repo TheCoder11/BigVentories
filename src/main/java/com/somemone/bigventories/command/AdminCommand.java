@@ -16,6 +16,7 @@ import org.bukkit.inventory.Inventory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class AdminCommand implements CommandExecutor {
 
@@ -26,7 +27,7 @@ public class AdminCommand implements CommandExecutor {
 
             Player player = (Player) sender;
 
-            if (args.length == 3) {
+            if (args.length > 1) {
                 switch (args[1]) {
 
                     case "ps":
@@ -81,7 +82,7 @@ public class AdminCommand implements CommandExecutor {
                                     sender.sendMessage(ChatColor.RED + "You do not have access to this command.");
                                 }
                                 break;
-                            }
+                        }
                         break;
                     case "cs":
 
@@ -146,7 +147,7 @@ public class AdminCommand implements CommandExecutor {
                                                 for (Player viewer : os.getViewers()) {
                                                     viewer.closeInventory();
                                                 }
-                                                Bigventories.personalStorages.remove(cs);
+                                                Bigventories.chunkStorages.remove(cs);
                                                 sender.sendMessage(ChatColor.GREEN + "Chunk Storage has been wiped!");
                                             }
                                         }
@@ -201,7 +202,7 @@ public class AdminCommand implements CommandExecutor {
                                                     for (Player viewer : os.getViewers()) {
                                                         viewer.closeInventory();
                                                     }
-                                                    Bigventories.personalStorages.remove(gs);
+                                                    Bigventories.groupStorages.remove(gs);
                                                     sender.sendMessage(ChatColor.GREEN + "Chunk Storage has been wiped!");
                                                 }
                                             }
@@ -211,11 +212,26 @@ public class AdminCommand implements CommandExecutor {
                                         sender.sendMessage(ChatColor.RED + "You do not have access to this command.");
                                     }
                                     break;
+                                case "getplayers":
+                                    if (sender.hasPermission("bva.getplayers")) {
+
+                                        String playerList = "Players: " + ChatColor.GREEN + "";
+                                        for (UUID uuid : gs.accessList) {
+                                            if (uuid != null) {
+                                                playerList = playerList + Bukkit.getOfflinePlayer(uuid).getName() + ", ";
+                                            }
+                                        }
+
+                                    }
                             }
                         } else {
                             return false;
                         }
                         break;
+
+                }
+            } else if (args.length == 1) {
+                switch (args[0]) {
                     case "save":
                         if (sender.hasPermission("bva.save")) {
                             try {
@@ -234,7 +250,7 @@ public class AdminCommand implements CommandExecutor {
                                 sender.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Loading to last saved configuration...");
 
                                 for (OpenStorage os : Bigventories.openStorages) {
-                                    for ( Player viewer : os.getViewers()) {
+                                    for (Player viewer : os.getViewers()) {
                                         viewer.closeInventory();
                                     }
                                 }
@@ -251,8 +267,8 @@ public class AdminCommand implements CommandExecutor {
                                 e.printStackTrace();
                             }
                         }
+                        break;
                 }
-
             }
 
         } else {

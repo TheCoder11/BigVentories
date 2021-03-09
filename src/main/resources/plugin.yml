@@ -30,6 +30,10 @@ permissions:
     description: Allows you to use the /bva command
     default: op
 
+  bva.getplayers:
+    description: Allows you to view the players in a group
+    default: op
+
   bva.view:
     description: Allows you to view all types of inventories.
     default: op
@@ -55,6 +59,7 @@ permissions:
       bva.delete: true
       bva.save: true
       bva.load: true
+      bva.getplayers: true
 
 
 

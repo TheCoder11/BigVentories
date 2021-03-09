@@ -159,8 +159,10 @@ public final class Bigventories extends JavaPlugin {
             String owner = gs.owner.getUniqueId().toString();
 
             List<String> uuids = new ArrayList<>();
-            for (Player player : gs.accessList) {
-                uuids.add( player.getUniqueId().toString() );
+            for (UUID puuid : gs.accessList) {
+                if (puuid != null) {
+                    uuids.add(puuid.toString());
+                }
             }
 
 
@@ -251,9 +253,9 @@ public final class Bigventories extends JavaPlugin {
 
                     ArrayList<String> accessStringList = (ArrayList<String>) gStorages.getStringList(key + ".players");
 
-                    ArrayList<Player> accessList = new ArrayList<>();
+                    ArrayList<UUID> accessList = new ArrayList<>();
                     for (String player : accessStringList) {
-                        accessList.add(Bukkit.getPlayer(UUID.fromString(player)));
+                        accessList.add(UUID.fromString(player));
                     }
 
                     String name = gStorages.getString(key + ".name");
@@ -263,6 +265,19 @@ public final class Bigventories extends JavaPlugin {
                 }
             }
         }
+
+    }
+
+    public int getInvitedGroupStorages ( Player player ) {
+
+        int invited = 0;
+        for (GroupStorage gs : Bigventories.groupStorages) {
+            if (gs.accessList.contains( player.getUniqueId() )) {
+                invited++;
+            }
+        }
+
+        return invited;
 
     }
 }
