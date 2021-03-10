@@ -1,10 +1,14 @@
 package com.somemone.bigventories;
 
+import com.somemone.bigventories.command.AdminCommand;
 import com.somemone.bigventories.command.ChunkStorageCommand;
 import com.somemone.bigventories.command.GroupStorageCommand;
 import com.somemone.bigventories.command.PersonalStorageCommand;
 import com.somemone.bigventories.listener.InventoryListener;
 import com.somemone.bigventories.storage.*;
+import com.somemone.bigventories.util.ConfigHandler;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -16,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -24,16 +29,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public final class Bigventories extends JavaPlugin {
 
     public static ArrayList<OpenStorage> openStorages;
+    public static ConfigHandler configHandler;
 
     public static ArrayList<PersonalStorage> personalStorages;
     public static ArrayList<ChunkStorage> chunkStorages;
     public static ArrayList<GroupStorage> groupStorages;
+    public static Bigventories plugin;
 
     public static ArrayList<Player> closedByPlugin;
+
+    public static File dataFolder;
+
+    private static Economy econ = null;
 
     @Override
     public void onEnable() {
@@ -43,18 +55,31 @@ public final class Bigventories extends JavaPlugin {
         groupStorages = new ArrayList<>();
         openStorages = new ArrayList<>();
         closedByPlugin = new ArrayList<>();
+        dataFolder = this.getDataFolder();
+        configHandler = new ConfigHandler(getConfig());
+        plugin = this;
 
          getServer().getPluginManager().registerEvents(new InventoryListener(), this);
 
          getCommand("pstorage").setExecutor(new PersonalStorageCommand());
          getCommand("cstorage").setExecutor(new ChunkStorageCommand());
          getCommand("gstorage").setExecutor(new GroupStorageCommand());
+         getCommand("bvadmin").setExecutor(new AdminCommand());
 
         try {
             loadStorages();
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
+
+        if (!setupEconomy()) {
+            Logger.getLogger("Minecraft").severe("Bigventories disabled due to no Vault dependency found!");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        saveDefaultConfig();
+
     }
 
 
@@ -71,7 +96,7 @@ public final class Bigventories extends JavaPlugin {
 
 
 
-    public void saveStorages () throws IOException {
+    public static void saveStorages () throws IOException {
         // Closing all OpenStorages to permanent storage
 
         for (OpenStorage os : Bigventories.openStorages) {
@@ -154,8 +179,10 @@ public final class Bigventories extends JavaPlugin {
             String owner = gs.owner.getUniqueId().toString();
 
             List<String> uuids = new ArrayList<>();
-            for (Player player : gs.accessList) {
-                uuids.add( player.getUniqueId().toString() );
+            for (UUID puuid : gs.accessList) {
+                if (puuid != null) {
+                    uuids.add(puuid.toString());
+                }
             }
 
 
@@ -167,12 +194,12 @@ public final class Bigventories extends JavaPlugin {
 
         }
 
-        con.save( new File (this.getDataFolder(), "storages.yml"));
+        con.save( new File (Bigventories.dataFolder, "storages.yml"));
     }
 
-    public void loadStorages () throws IOException, InvalidConfigurationException {
+    public static void loadStorages () throws IOException, InvalidConfigurationException {
         YamlConfiguration con = new YamlConfiguration();
-        con.load( new File( this.getDataFolder(), "storages.yml"));
+        con.load( new File( Bigventories.dataFolder, "storages.yml"));
         ArrayList<String> keys;
 
         // load PersonalStorages
@@ -246,9 +273,9 @@ public final class Bigventories extends JavaPlugin {
 
                     ArrayList<String> accessStringList = (ArrayList<String>) gStorages.getStringList(key + ".players");
 
-                    ArrayList<Player> accessList = new ArrayList<>();
+                    ArrayList<UUID> accessList = new ArrayList<>();
                     for (String player : accessStringList) {
-                        accessList.add(Bukkit.getPlayer(UUID.fromString(player)));
+                        accessList.add(UUID.fromString(player));
                     }
 
                     String name = gStorages.getString(key + ".name");
@@ -260,4 +287,36 @@ public final class Bigventories extends JavaPlugin {
         }
 
     }
+
+    public static Economy getEcon() {
+        return econ;
+    }
+
+    public static int getInvitedGroupStorages ( UUID uuid ) {
+
+        int invited = 0;
+        for (GroupStorage gs : Bigventories.groupStorages) {
+            if (gs.accessList.contains( uuid )) {
+                invited++;
+            }
+        }
+
+        return invited;
+
+    }
+
+    private boolean setupEconomy() {
+
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
+
+    }
+
 }

@@ -9,7 +9,7 @@ import java.util.UUID;
 public class GroupStorage extends Storage {
 
     public Player owner;
-    public ArrayList<Player> accessList;
+    public ArrayList<UUID> accessList;
     public String name;
 
     public GroupStorage(String name, int rows, Player owner) {
@@ -17,28 +17,36 @@ public class GroupStorage extends Storage {
 
         this.owner = owner;
         this.accessList = new ArrayList<>();
-        this.accessList.add(owner);
+        this.accessList.add(owner.getUniqueId());
         this.name = name;
     }
 
-    public GroupStorage(String name, int rows, ArrayList<ItemStack> items, Player owner, UUID uuid, ArrayList<Player> accessList) {
+    public GroupStorage(String name, int rows, ArrayList<ItemStack> items, Player owner, UUID uuid, ArrayList<UUID> accessList) {
         super(rows, uuid, items);
 
         this.owner = owner;
         this.accessList = accessList;
-        this.accessList.add(owner);
+        this.accessList.add(owner.getUniqueId());
         this.name = name;
     }
 
     public void addPlayer ( Player added ) {
-        this.accessList.add(added);
+        this.accessList.add(added.getUniqueId());
+    }
+
+    public void addPlayer ( UUID uuid ) {
+        this.accessList.add(uuid);
     }
 
     public void removePlayer ( Player removed ) {
-        this.accessList.add(removed);
+        this.accessList.add(removed.getUniqueId());
     }
 
-    public boolean checkAccess (Player checking) {
+    public void removePlayers ( UUID uuid ) {
+        this.accessList.add(uuid);
+    }
+
+    public boolean checkAccess (UUID checking) {
         return this.accessList.contains(checking);
     }
 }

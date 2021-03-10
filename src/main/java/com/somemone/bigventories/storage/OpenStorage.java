@@ -38,7 +38,6 @@ public class OpenStorage {
         }
 
         return players;
-
     }
 
 }
