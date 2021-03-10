@@ -69,9 +69,16 @@ public class PersonalStorageCommand implements CommandExecutor {
                         }
                     }
 
-                    PersonalStorage cps = new PersonalStorage(7, player);
-                    Bigventories.personalStorages.add(cps);
-                    sender.sendMessage(ChatColor.GREEN + "Personal Storage successfully created!");
+                    if (Bigventories.configHandler.getPersonalStoragePrice(1) < Bigventories.getEcon().getBalance(player) && Bigventories.configHandler.getPersonalStoragePrice(1) != 0) {
+                        Bigventories.getEcon().withdrawPlayer(player, Bigventories.configHandler.getPersonalStoragePrice(1));
+                        PersonalStorage cps = new PersonalStorage(7, player);
+                        Bigventories.personalStorages.add(cps);
+
+                        sender.sendMessage(ChatColor.GREEN + "Personal Storage successfully created!");
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "Insufficient funds!");
+                    }
+
                     break;
 
                 case "upgrade":
@@ -87,7 +94,13 @@ public class PersonalStorageCommand implements CommandExecutor {
 
                             if (upps.owner == player) {
 
-                                upps.rows = upps.rows + rowsToAdd;
+                                if (Bigventories.configHandler.getPersonalStoragePrice(rowsToAdd) < Bigventories.getEcon().getBalance(player) && Bigventories.configHandler.getPersonalStoragePrice(1) != 0) {
+                                    Bigventories.getEcon().withdrawPlayer(player, Bigventories.configHandler.getPersonalStoragePrice(rowsToAdd));
+                                    upps.rows = upps.rows + rowsToAdd;
+                                    sender.sendMessage(ChatColor.GREEN + "Personal Storage successfully upgraded!");
+                                } else {
+                                    sender.sendMessage(ChatColor.RED + "Insufficient funds!");
+                                }
 
                             }
 

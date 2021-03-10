@@ -6,6 +6,9 @@ import com.somemone.bigventories.command.GroupStorageCommand;
 import com.somemone.bigventories.command.PersonalStorageCommand;
 import com.somemone.bigventories.listener.InventoryListener;
 import com.somemone.bigventories.storage.*;
+import com.somemone.bigventories.util.ConfigHandler;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -17,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -25,18 +29,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public final class Bigventories extends JavaPlugin {
 
     public static ArrayList<OpenStorage> openStorages;
+    public static ConfigHandler configHandler;
 
     public static ArrayList<PersonalStorage> personalStorages;
     public static ArrayList<ChunkStorage> chunkStorages;
     public static ArrayList<GroupStorage> groupStorages;
+    public static Bigventories plugin;
 
     public static ArrayList<Player> closedByPlugin;
 
     public static File dataFolder;
+
+    private static Economy econ = null;
 
     @Override
     public void onEnable() {
@@ -47,6 +56,8 @@ public final class Bigventories extends JavaPlugin {
         openStorages = new ArrayList<>();
         closedByPlugin = new ArrayList<>();
         dataFolder = this.getDataFolder();
+        configHandler = new ConfigHandler(getConfig());
+        plugin = this;
 
          getServer().getPluginManager().registerEvents(new InventoryListener(), this);
 
@@ -60,6 +71,15 @@ public final class Bigventories extends JavaPlugin {
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
+
+        if (!setupEconomy()) {
+            Logger.getLogger("Minecraft").severe("Bigventories disabled due to no Vault dependency found!");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        saveDefaultConfig();
+
     }
 
 
@@ -268,11 +288,15 @@ public final class Bigventories extends JavaPlugin {
 
     }
 
-    public int getInvitedGroupStorages ( Player player ) {
+    public static Economy getEcon() {
+        return econ;
+    }
+
+    public static int getInvitedGroupStorages ( UUID uuid ) {
 
         int invited = 0;
         for (GroupStorage gs : Bigventories.groupStorages) {
-            if (gs.accessList.contains( player.getUniqueId() )) {
+            if (gs.accessList.contains( uuid )) {
                 invited++;
             }
         }
@@ -280,4 +304,19 @@ public final class Bigventories extends JavaPlugin {
         return invited;
 
     }
+
+    private boolean setupEconomy() {
+
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
+
+    }
+
 }

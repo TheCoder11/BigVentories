@@ -74,9 +74,14 @@ public class GroupStorageCommand implements CommandExecutor {
                         for (GroupStorage upgs : Bigventories.groupStorages) {
 
                             if (upgs.name.equals(args[1])) {
+                                if (Bigventories.configHandler.getGroupStoragePrice(rowsToAdd) < Bigventories.getEcon().getBalance(player) && Bigventories.configHandler.getGroupStoragePrice(rowsToAdd) != 0) {
+                                    Bigventories.getEcon().withdrawPlayer(player, Bigventories.configHandler.getGroupStoragePrice(rowsToAdd));
+                                    upgs.rows = upgs.rows + rowsToAdd;
+                                    sender.sendMessage(ChatColor.GREEN + "Group Storage was upgraded!");
+                                } else {
+                                    sender.sendMessage(ChatColor.RED + "Insufficient funds!");
+                                }
 
-                                upgs.rows = upgs.rows + rowsToAdd;
-                                sender.sendMessage(ChatColor.GREEN + "Group Storage was upgraded!");
 
                             }
 
@@ -97,8 +102,12 @@ public class GroupStorageCommand implements CommandExecutor {
                                 if (fgs.name.equals(args[1])) {
                                     if (fgs.owner == player) {
 
-                                        sender.sendMessage(ChatColor.GREEN + args[2] + " was invited to the Group!");
-                                        fgs.accessList.add(Bukkit.getOfflinePlayer(args[2]).getUniqueId());
+                                        if (Bigventories.getInvitedGroupStorages(Bukkit.getOfflinePlayer(args[2]).getUniqueId()) <= Bigventories.configHandler.getGroupStorageNum()) {
+                                            sender.sendMessage(ChatColor.GREEN + args[2] + " was invited to the Group!");
+                                            fgs.accessList.add(Bukkit.getOfflinePlayer(args[2]).getUniqueId());
+                                        } else {
+                                            sender.sendMessage(ChatColor.RED + args[2] + " has too many group storages!");
+                                        }
                                         return true;
 
                                     } else {
@@ -131,9 +140,14 @@ public class GroupStorageCommand implements CommandExecutor {
                             }
                         }
 
-                        newGS.accessList.add(player.getUniqueId());
-                        Bigventories.groupStorages.add(newGS);
-                        sender.sendMessage(ChatColor.GREEN + "Group Storage successfully created!");
+                        if (Bigventories.configHandler.getGroupStoragePrice(1) < Bigventories.getEcon().getBalance(player) && Bigventories.configHandler.getGroupStoragePrice(1) != 0) {
+                            Bigventories.getEcon().withdrawPlayer(player, Bigventories.configHandler.getGroupStoragePrice(1));
+                            newGS.accessList.add(player.getUniqueId());
+                            Bigventories.groupStorages.add(newGS);
+                            sender.sendMessage(ChatColor.GREEN + "Group Storage successfully created!");
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "Insufficient Funds!");
+                        }
 
                     }
                     break;
