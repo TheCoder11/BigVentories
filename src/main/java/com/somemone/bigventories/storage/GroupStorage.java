@@ -8,25 +8,25 @@ import java.util.UUID;
 
 public class GroupStorage extends Storage {
 
-    public Player owner;
+    public UUID owner;
     public ArrayList<UUID> accessList;
     public String name;
 
-    public GroupStorage(String name, int rows, Player owner) {
+    public GroupStorage(String name, int rows, UUID owner) {
         super(rows);
 
         this.owner = owner;
         this.accessList = new ArrayList<>();
-        this.accessList.add(owner.getUniqueId());
+        this.accessList.add(owner);
         this.name = name;
     }
 
-    public GroupStorage(String name, int rows, ArrayList<ItemStack> items, Player owner, UUID uuid, ArrayList<UUID> accessList) {
+    public GroupStorage(String name, int rows, ArrayList<ItemStack> items, UUID owner, UUID uuid, ArrayList<UUID> accessList) {
         super(rows, uuid, items);
 
         this.owner = owner;
         this.accessList = accessList;
-        this.accessList.add(owner.getUniqueId());
+        this.accessList.add(owner);
         this.name = name;
     }
 

@@ -16,7 +16,7 @@ public class ConfigHandler {
     public double getPersonalStoragePrice (int rows) {
 
         if (config.getBoolean("personal-storage.purchaseable")) {
-            return config.getInt("personal-storage.price") * Math.pow(config.getInt("personal-storage.upgrade-multiplier"), rows);
+            return config.getInt("personal-storage.price") * Math.pow(config.getDouble("personal-storage.upgrade-multiplier"), rows);
         } else {
             return 0;
         }
@@ -26,7 +26,7 @@ public class ConfigHandler {
     public double getChunkStoragePrice (int rows) {
 
         if (config.getBoolean("chunk-storage.purchaseable")) {
-            return config.getInt("chunk-storage.price") * Math.pow(config.getInt("chunk-storage.upgrade-multiplier"), rows);
+            return config.getInt("chunk-storage.price") * Math.pow(config.getDouble("chunk-storage.upgrade-multiplier"), rows);
         } else {
             return 0;
         }
@@ -36,7 +36,7 @@ public class ConfigHandler {
     public double getGroupStoragePrice (int rows) {
 
         if (config.getBoolean("group-storage.purchaseable")) {
-            return (config.getInt("group-storage.price") * Math.pow(config.getInt("group-storage.upgrade-multiplier"), rows));
+            return (config.getInt("group-storage.price") * Math.pow(config.getDouble("group-storage.upgrade-multiplier"), rows));
         } else {
             return 0;
         }

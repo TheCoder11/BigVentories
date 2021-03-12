@@ -4,6 +4,7 @@ import com.somemone.bigventories.Bigventories;
 import com.somemone.bigventories.storage.OpenStorage;
 import com.somemone.bigventories.storage.PersonalStorage;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,7 +26,7 @@ public class PersonalStorageCommand implements CommandExecutor {
 
                     for (PersonalStorage ps : Bigventories.personalStorages) {
 
-                        if (ps.owner == player) {
+                        if (ps.owner == (OfflinePlayer) player) {
 
                             // Check for open inventory
 

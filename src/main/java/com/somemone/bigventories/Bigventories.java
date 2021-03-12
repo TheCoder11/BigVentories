@@ -12,6 +12,7 @@ import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -176,7 +177,7 @@ public final class Bigventories extends JavaPlugin {
 
             ItemStack[] items = gs.items.toArray(new ItemStack[0]);
             String uuid = gs.uuid.toString();
-            String owner = gs.owner.getUniqueId().toString();
+            String owner = gs.owner.toString();
 
             List<String> uuids = new ArrayList<>();
             for (UUID puuid : gs.accessList) {
@@ -215,7 +216,7 @@ public final class Bigventories extends JavaPlugin {
 
                     UUID uuid = UUID.fromString(key);
 
-                    Player owner = Bukkit.getPlayer(UUID.fromString(pStorages.getString(key + ".owner")));
+                    OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(pStorages.getString(key + ".owner")));
 
                     ArrayList<ItemStack> contents = (ArrayList<ItemStack>) pStorages.getList(key + ".contents");
 
@@ -269,13 +270,15 @@ public final class Bigventories extends JavaPlugin {
 
                     int rows = gStorages.getInt(key + ".rows");
 
-                    Player owner = Bukkit.getPlayer(UUID.fromString(gStorages.getString(key + ".owner")));
+                    UUID owner = UUID.fromString(gStorages.getString(key + ".owner"));
 
                     ArrayList<String> accessStringList = (ArrayList<String>) gStorages.getStringList(key + ".players");
 
                     ArrayList<UUID> accessList = new ArrayList<>();
                     for (String player : accessStringList) {
-                        accessList.add(UUID.fromString(player));
+                        if ( !(accessList.contains( UUID.fromString(player)))) {
+                            accessList.add(UUID.fromString(player));
+                        }
                     }
 
                     String name = gStorages.getString(key + ".name");

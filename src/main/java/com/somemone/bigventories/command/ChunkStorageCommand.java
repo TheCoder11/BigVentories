@@ -71,9 +71,6 @@ public class ChunkStorageCommand  implements CommandExecutor {
 
                     }
 
-                    sender.sendMessage(String.valueOf( Bigventories.configHandler.getPersonalStoragePrice(1) ));
-                    sender.sendMessage(String.valueOf( Bigventories.plugin.getConfig().getBoolean("personal-storage.purchaseable") ));
-
                     if (Bigventories.configHandler.getPersonalStoragePrice(1) < Bigventories.getEcon().getBalance(player) && Bigventories.configHandler.getPersonalStoragePrice(1) != 0) {
                         Bigventories.getEcon().withdrawPlayer(player, Bigventories.configHandler.getPersonalStoragePrice(1));
                         Bigventories.chunkStorages.add(newCS);
