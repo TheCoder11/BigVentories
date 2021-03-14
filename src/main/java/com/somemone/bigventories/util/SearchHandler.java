@@ -1,6 +1,6 @@
 package com.somemone.bigventories.util;
 
-import com.somemone.bigventories.Bigventories;
+import com.somemone.bigventories.StoragePlus;
 import com.somemone.bigventories.storage.ChunkStorage;
 import com.somemone.bigventories.storage.GroupStorage;
 import com.somemone.bigventories.storage.PersonalStorage;
@@ -13,7 +13,7 @@ import java.util.UUID;
 public class SearchHandler {
 
     public PersonalStorage searchPersonalStorage (Player player) {
-        for (PersonalStorage ps : Bigventories.personalStorages) {
+        for (PersonalStorage ps : StoragePlus.personalStorages) {
             if (ps.owner == player) {
                 return ps;
             }
@@ -23,7 +23,7 @@ public class SearchHandler {
     }
 
     public PersonalStorage searchPersonalStorage (UUID uuid) {
-        for (PersonalStorage ps : Bigventories.personalStorages) {
+        for (PersonalStorage ps : StoragePlus.personalStorages) {
             if (ps.uuid == uuid) {
                 return ps;
             }
@@ -33,7 +33,7 @@ public class SearchHandler {
 
 
     public ChunkStorage searchChunkStorage (int x, int z) {
-        for (ChunkStorage cs : Bigventories.chunkStorages) {
+        for (ChunkStorage cs : StoragePlus.chunkStorages) {
             if (cs.x == x && cs.z == z) {
                 return cs;
             }
@@ -42,7 +42,7 @@ public class SearchHandler {
     }
 
     public ChunkStorage searchChunkStorage (Chunk chunk) {
-        for (ChunkStorage cs : Bigventories.chunkStorages) {
+        for (ChunkStorage cs : StoragePlus.chunkStorages) {
             if (cs.checkChunk(chunk)) {
                 return cs;
             }
@@ -51,7 +51,7 @@ public class SearchHandler {
     }
 
     public ChunkStorage searchChunkStorage (UUID uuid) {
-        for (ChunkStorage cs : Bigventories.chunkStorages) {
+        for (ChunkStorage cs : StoragePlus.chunkStorages) {
             if (cs.uuid == uuid) {
                 return cs;
             }
@@ -61,7 +61,7 @@ public class SearchHandler {
 
 
     public GroupStorage searchGroupStorage (Player owner) {
-        for (GroupStorage gs : Bigventories.groupStorages) {
+        for (GroupStorage gs : StoragePlus.groupStorages) {
             if (gs.owner == owner.getUniqueId()) {
                 return gs;
             }
@@ -72,8 +72,8 @@ public class SearchHandler {
     public ArrayList<GroupStorage> searchGroupStorages (UUID uuid) {
         ArrayList<GroupStorage> list = new ArrayList<>();
 
-        for (GroupStorage gs : Bigventories.groupStorages) {
-            if (gs.accessList.contains(list)) {
+        for (GroupStorage gs : StoragePlus.groupStorages) {
+            if (gs.accessList.contains(uuid)) {
                 list.add(gs);
             }
         }
@@ -81,7 +81,7 @@ public class SearchHandler {
     }
 
     public GroupStorage searchGroupStorage (UUID uuid) {
-        for (GroupStorage gs : Bigventories.groupStorages) {
+        for (GroupStorage gs : StoragePlus.groupStorages) {
             if (gs.uuid == uuid) {
                 return gs;
             }
@@ -90,7 +90,7 @@ public class SearchHandler {
     }
 
     public GroupStorage searchGroupStorage (String name) {
-        for (GroupStorage gs : Bigventories.groupStorages) {
+        for (GroupStorage gs : StoragePlus.groupStorages) {
             if (gs.name == name) {
                 return gs;
             }

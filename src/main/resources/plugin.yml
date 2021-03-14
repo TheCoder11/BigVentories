@@ -1,6 +1,6 @@
-name: BigVentories
+name: StoragePlus
 version: ${project.version}
-main: com.somemone.bigventories.Bigventories
+main: com.somemone.bigventories.StoragePlus
 api-version: 1.16
 
 commands:
@@ -48,6 +48,10 @@ permissions:
 
   bva.load:
     description: Allows the player to load the game
+    default: op
+
+  bva.voucher:
+    description: Allows user to create vouchers
     default: op
 
   bva.*:

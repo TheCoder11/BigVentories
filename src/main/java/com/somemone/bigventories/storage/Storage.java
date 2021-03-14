@@ -40,7 +40,7 @@ public class Storage {
         pBMeta.setDisplayName(ChatColor.RED + "PREVIOUS PAGE");
         prevButton.setItemMeta(pBMeta);
 
-        glassPane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        glassPane = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
         ItemMeta gPMeta = glassPane.getItemMeta();
         gPMeta.setDisplayName(ChatColor.GOLD + "|");
         glassPane.setItemMeta(gPMeta);
@@ -67,9 +67,8 @@ public class Storage {
         glassPane.setItemMeta(gPMeta);
     }
 
-    private boolean checkRows() {
-        int maxSize = this.rows * 9;
-        return maxSize <= this.items.size();
+    public void addRows(int rows) {
+        this.rows = this.rows + rows;
     }
 
     public ArrayList<Inventory> buildInventories ( ) {
@@ -103,15 +102,15 @@ public class Storage {
 
             }
 
-            inv.setItem( invSize - 9, prevButton);
+            inv.setItem( invSize - 9, glassPane);
             inv.setItem( invSize - 8, glassPane);
             inv.setItem( invSize - 7, glassPane);
-            inv.setItem( invSize - 6, glassPane);
+            inv.setItem( invSize - 6, prevButton);
             inv.setItem( invSize - 5, glassPane);
-            inv.setItem( invSize - 4, glassPane);
+            inv.setItem( invSize - 4, nextButton);
             inv.setItem( invSize - 3, glassPane);
             inv.setItem( invSize - 2, glassPane);
-            inv.setItem( invSize - 1, nextButton);
+            inv.setItem( invSize - 1, glassPane);
 
             inventories.add( inv ) ;
 

@@ -1,6 +1,6 @@
 package com.somemone.bigventories.listener;
 
-import com.somemone.bigventories.Bigventories;
+import com.somemone.bigventories.StoragePlus;
 import com.somemone.bigventories.storage.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,7 +22,7 @@ public class InventoryListener implements Listener {
 
             ArrayList<Inventory> playerInventories = null;
 
-            for (OpenStorage os : Bigventories.openStorages) {
+            for (OpenStorage os : StoragePlus.openStorages) {
                 if (os.checkIfViewing((Player) event.getWhoClicked())) {
 
                     playerInventories = os.inventory;
@@ -41,7 +41,7 @@ public class InventoryListener implements Listener {
                 if (event.getCurrentItem().equals(Storage.nextButton)) {
                     if (playerInventories != null && playerInventories.contains(event.getInventory())) {
 
-                        Bigventories.closedByPlugin.add((Player) event.getWhoClicked());
+                        StoragePlus.closedByPlugin.add((Player) event.getWhoClicked());
 
                         if (playerInventories.indexOf(event.getInventory()) < (playerInventories.size() - 1)) {
                             Inventory selectedInventory = playerInventories.get(playerInventories.indexOf(event.getInventory()) + 1);
@@ -58,7 +58,7 @@ public class InventoryListener implements Listener {
 
                     if (playerInventories != null && playerInventories.contains(event.getInventory())) {
 
-                        Bigventories.closedByPlugin.add((Player) event.getWhoClicked());
+                        StoragePlus.closedByPlugin.add((Player) event.getWhoClicked());
 
                         if (playerInventories.indexOf(event.getInventory()) > 0) {
                             Inventory selectedInventory = playerInventories.get(playerInventories.indexOf(event.getInventory()) - 1);
@@ -88,29 +88,29 @@ public class InventoryListener implements Listener {
     @EventHandler
     public void onInventoryClose (InventoryCloseEvent event) {
 
-        if (!(Bigventories.closedByPlugin.contains(event.getPlayer()))) {
+        if (!(StoragePlus.closedByPlugin.contains(event.getPlayer()))) {
 
             if (event.getView().getTitle().equals("Storage")) { // "Deconstructs" inventories to their
 
                 Storage st = null;
                 OpenStorage permStorage = null;
 
-                for (OpenStorage os : Bigventories.openStorages) {
+                for (OpenStorage os : StoragePlus.openStorages) {
                     if (os.checkIfViewing((Player) event.getPlayer())) {
                         if (os.getViewers().size() == 1) {  // Player is the only viewer of the inventory
-                            for (PersonalStorage ps : Bigventories.personalStorages) {
+                            for (PersonalStorage ps : StoragePlus.personalStorages) {
                                 if (ps.uuid == os.uuid) {
                                     st = ps;
                                     permStorage = os;
                                 }
                             }
-                            for (ChunkStorage cs : Bigventories.chunkStorages) {
+                            for (ChunkStorage cs : StoragePlus.chunkStorages) {
                                 if (cs.uuid == os.uuid) {
                                     st = cs;
                                     permStorage = os;
                                 }
                             }
-                            for (GroupStorage gs : Bigventories.groupStorages) {
+                            for (GroupStorage gs : StoragePlus.groupStorages) {
                                 if (gs.uuid == os.uuid) {
                                     st = gs;
                                     permStorage = os;
@@ -125,7 +125,7 @@ public class InventoryListener implements Listener {
 
                         ArrayList<ItemStack> totalItems = new ArrayList<>();
 
-                        Bigventories.openStorages.remove(permStorage);
+                        StoragePlus.openStorages.remove(permStorage);
 
 
                         for (Inventory inv : permStorage.inventory) {
@@ -157,7 +157,7 @@ public class InventoryListener implements Listener {
             }
 
         } else {
-            Bigventories.closedByPlugin.remove(event.getPlayer());
+            StoragePlus.closedByPlugin.remove(event.getPlayer());
         }
 
     }

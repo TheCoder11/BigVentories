@@ -45,7 +45,7 @@ public class ConfigHandler {
 
     public int getGroupStorageNum () {
 
-        return config.getInt("default-player-groups");
+        return Math.min(config.getInt("default-player-groups"), 7);
 
     }
 
