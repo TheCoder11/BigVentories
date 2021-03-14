@@ -1,5 +1,6 @@
 package com.somemone.bigventories.storage;
 
+import com.somemone.bigventories.StoragePlus;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -67,10 +68,6 @@ public class Storage {
         glassPane.setItemMeta(gPMeta);
     }
 
-    public void addRows(int rows) {
-        this.rows = this.rows + rows;
-    }
-
     public ArrayList<Inventory> buildInventories ( ) {
 
         ArrayList<Inventory> inventories = new ArrayList<>();
@@ -118,6 +115,26 @@ public class Storage {
 
         return inventories;
 
+    }
+
+    public void addRows (int rows) {
+        if (StoragePlus.openStorages.size() == 0) {
+            OpenStorage toDelete = null;
+            for (OpenStorage os : StoragePlus.openStorages) {
+                if (os.uuid == this.uuid) {
+                    for (Player player : os.getViewers()) {
+                        player.closeInventory();
+                        player.sendMessage(ChatColor.GOLD + "This storage has been upgraded!");
+                    }
+                }
+            }
+
+            if (toDelete != null) {
+                StoragePlus.openStorages.remove(toDelete);
+            }
+        }
+
+        this.rows = this.rows + rows;
     }
 
 }

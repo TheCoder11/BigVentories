@@ -76,7 +76,7 @@ public class GroupStorageCommand implements CommandExecutor {
                             if (upgs.name.equals(args[1])) {
                                 if (StoragePlus.configHandler.getGroupStoragePrice(rowsToAdd) < StoragePlus.getEcon().getBalance(player) && StoragePlus.configHandler.getGroupStoragePrice(rowsToAdd) != 0) {
                                     StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getGroupStoragePrice(rowsToAdd));
-                                    upgs.rows = upgs.rows + rowsToAdd;
+                                    upgs.addRows(rowsToAdd);
                                     sender.sendMessage(ChatColor.GREEN + "Group Storage was upgraded!");
 
                                     return true;
@@ -100,25 +100,46 @@ public class GroupStorageCommand implements CommandExecutor {
 
                         if (StoragePlus.groupStorages.size() > 0) {
 
-                            for (GroupStorage fgs : StoragePlus.groupStorages) {
-                                if (fgs.name.equals(args[1])) {
-                                    if (fgs.owner == player.getUniqueId()) {
+                            if (Bukkit.getOfflinePlayer(args[2]) != null ) {
 
-                                        if (StoragePlus.getInvitedGroupStorages(Bukkit.getOfflinePlayer(args[2]).getUniqueId()) <= StoragePlus.configHandler.getGroupStorageNum()) {
-                                            sender.sendMessage(ChatColor.GREEN + args[2] + " was invited to the Group!");
-                                            fgs.accessList.add(Bukkit.getOfflinePlayer(args[2]).getUniqueId());
+                                for (GroupStorage fgs : StoragePlus.groupStorages) {
+                                    if (fgs.name.equals(args[1])) {
+                                        if (fgs.owner == player.getUniqueId()) {
+
+                                            if (StoragePlus.getInvitedGroupStorages(Bukkit.getOfflinePlayer(args[2]).getUniqueId()) <= StoragePlus.configHandler.getGroupStorageNum()) {
+
+                                                if (Bukkit.getOfflinePlayer(args[2]).isOnline()) {
+
+                                                    if (StoragePlus.currentInvites.containsKey(Bukkit.getPlayer(args[2]).getUniqueId())) {
+
+                                                        sender.sendMessage(ChatColor.RED + "This player already has an invitation!");
+
+                                                    } else {
+
+                                                        sender.sendMessage(ChatColor.GREEN + args[2] + " was invited to the Group!");
+                                                        StoragePlus.currentInvites.put(Bukkit.getPlayer(args[2]).getUniqueId(), fgs.uuid);
+
+
+                                                        Bukkit.getPlayer(args[2]).sendMessage("You have been invited to the group " + fgs.name + "! Use /staccept to accept this request");
+
+                                                    }
+
+                                                }
+                                            } else {
+                                                sender.sendMessage(ChatColor.RED + args[2] + " has too many group storages!");
+                                            }
+                                            return true;
+
                                         } else {
-                                            sender.sendMessage(ChatColor.RED + args[2] + " has too many group storages!");
+
+                                            sender.sendMessage(ChatColor.RED + "You do not have access to this storage!");
+
                                         }
-                                        return true;
-
-                                    } else {
-
-                                        sender.sendMessage(ChatColor.RED + "You do not have access to this storage!");
 
                                     }
-
                                 }
+                            } else {
+                                sender.sendMessage(ChatColor.RED + "This is ");
                             }
                         }
 

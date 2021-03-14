@@ -29,13 +29,13 @@ public class AdminCommand implements CommandExecutor {
 
             Player player = (Player) sender;
 
-            if (args.length == 4) {
+            if (args.length == 3) {
                 switch (args[1]) {
 
                     case "ps":
                         PersonalStorage ps = null;
                         for (PersonalStorage pes : StoragePlus.personalStorages) {
-                            if (pes.owner == Bukkit.getPlayer(args[2])) {
+                            if (pes.owner == Bukkit.getOfflinePlayer(args[2])) {
                                 ps = pes;
                             }
                         }
@@ -74,11 +74,11 @@ public class AdminCommand implements CommandExecutor {
                                                 for (Player viewer : os.getViewers()) {
                                                     viewer.closeInventory();
                                                 }
-                                                StoragePlus.personalStorages.remove(ps);
-                                                sender.sendMessage(ChatColor.GREEN + args[2] + "'s Personal Storage has been wiped!");
                                             }
                                         }
                                     }
+                                    StoragePlus.personalStorages.remove(ps);
+                                    sender.sendMessage(ChatColor.GREEN + args[2] + "'s Personal Storage has been wiped!");
 
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "You do not have access to this command.");
@@ -143,17 +143,16 @@ public class AdminCommand implements CommandExecutor {
 
                                 if (sender.hasPermission("bva.delete")) {
                                     if (StoragePlus.openStorages.size() > 0) {
-
                                         for (OpenStorage os : StoragePlus.openStorages) {
                                             if (os.uuid == cs.uuid) {
                                                 for (Player viewer : os.getViewers()) {
                                                     viewer.closeInventory();
                                                 }
-                                                StoragePlus.chunkStorages.remove(cs);
-                                                sender.sendMessage(ChatColor.GREEN + "Chunk Storage has been wiped!");
                                             }
                                         }
                                     }
+                                    StoragePlus.chunkStorages.remove(cs);
+                                    sender.sendMessage(ChatColor.GREEN + "Chunk Storage has been wiped!");
 
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "You do not have access to this command.");
@@ -166,7 +165,7 @@ public class AdminCommand implements CommandExecutor {
                         if (args.length == 3) {
                             GroupStorage gs = null;
                             for (GroupStorage grs : StoragePlus.groupStorages) {
-                                if (grs.name == args[2]) {
+                                if (grs.name.equals(args[2])) {
                                     gs = grs;
                                 }
                             }
@@ -198,17 +197,17 @@ public class AdminCommand implements CommandExecutor {
                                 case "delete":
                                     if (sender.hasPermission("bva.delete")) {
                                         if (StoragePlus.openStorages.size() > 0) {
-
                                             for (OpenStorage os : StoragePlus.openStorages) {
                                                 if (os.uuid == gs.uuid) {
                                                     for (Player viewer : os.getViewers()) {
                                                         viewer.closeInventory();
                                                     }
-                                                    StoragePlus.groupStorages.remove(gs);
-                                                    sender.sendMessage(ChatColor.GREEN + "Chunk Storage has been wiped!");
                                                 }
                                             }
                                         }
+
+                                        StoragePlus.groupStorages.remove(gs);
+                                        sender.sendMessage(ChatColor.GREEN + "Group Storage has been wiped!");
 
                                     } else {
                                         sender.sendMessage(ChatColor.RED + "You do not have access to this command.");

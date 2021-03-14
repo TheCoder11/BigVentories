@@ -23,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -39,6 +40,8 @@ public final class StoragePlus extends JavaPlugin {
 
     public static ArrayList<Player> closedByPlugin;
 
+    public static HashMap<UUID, UUID> currentInvites; // Player UUID, Storage UUID
+
     public static File dataFolder;
 
     private static Economy econ = null;
@@ -53,6 +56,7 @@ public final class StoragePlus extends JavaPlugin {
         closedByPlugin = new ArrayList<>();
         dataFolder = this.getDataFolder();
         configHandler = new ConfigHandler(getConfig());
+        currentInvites = new HashMap<>();
         plugin = this;
 
          getServer().getPluginManager().registerEvents(new InventoryListener(), this);

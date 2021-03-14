@@ -152,14 +152,16 @@ public class VoucherListener implements Listener {
     public void onItemClick (PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-            if (event.getItem().getItemMeta().getPersistentDataContainer().has( new NamespacedKey(StoragePlus.plugin, "rows-alloted"), PersistentDataType.INTEGER )) {
+            if (event.getItem() != null) {
+                if (event.getItem().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(StoragePlus.plugin, "rows-alloted"), PersistentDataType.INTEGER)) {
 
-                VoucherInventory vInv = new VoucherInventory( event.getItem().getItemMeta().getPersistentDataContainer().get( new NamespacedKey(StoragePlus.plugin, "rows-alloted"), PersistentDataType.INTEGER ), event.getPlayer());
+                    VoucherInventory vInv = new VoucherInventory(event.getItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(StoragePlus.plugin, "rows-alloted"), PersistentDataType.INTEGER), event.getPlayer());
 
-                rowsRemaining.put(event.getPlayer().getUniqueId(), vInv);
+                    rowsRemaining.put(event.getPlayer().getUniqueId(), vInv);
 
-                event.getPlayer().openInventory( vInv.buildInventory() );
+                    event.getPlayer().openInventory(vInv.buildInventory());
 
+                }
             }
 
         }

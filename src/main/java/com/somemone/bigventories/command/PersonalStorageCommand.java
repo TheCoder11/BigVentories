@@ -97,7 +97,7 @@ public class PersonalStorageCommand implements CommandExecutor {
 
                                 if (StoragePlus.configHandler.getPersonalStoragePrice(rowsToAdd) < StoragePlus.getEcon().getBalance(player) && StoragePlus.configHandler.getPersonalStoragePrice(1) != 0) {
                                     StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getPersonalStoragePrice(rowsToAdd));
-                                    upps.rows = upps.rows + rowsToAdd;
+                                    upps.addRows(rowsToAdd);
                                     sender.sendMessage(ChatColor.GREEN + "Personal Storage successfully upgraded!");
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "Insufficient funds!");

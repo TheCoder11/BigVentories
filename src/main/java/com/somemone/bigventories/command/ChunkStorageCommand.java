@@ -98,7 +98,7 @@ public class ChunkStorageCommand  implements CommandExecutor {
 
                                 if (StoragePlus.getEcon().getBalance(player) > StoragePlus.configHandler.getChunkStoragePrice(rowsToAdd) && StoragePlus.configHandler.getChunkStoragePrice(1) > 0) {
                                     StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getChunkStoragePrice(rowsToAdd));
-                                    upcs.rows = upcs.rows + rowsToAdd;
+                                    upcs.addRows(rowsToAdd);
                                     sender.sendMessage(ChatColor.GREEN + "Chunk Storage successfully upgraded!");
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "Insufficient Funds");
