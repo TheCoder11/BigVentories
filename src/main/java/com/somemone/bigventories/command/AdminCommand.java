@@ -1,6 +1,7 @@
 package com.somemone.bigventories.command;
 
-import com.somemone.bigventories.Bigventories;
+import com.somemone.bigventories.StoragePlus;
+import com.somemone.bigventories.item.VoucherItem;
 import com.somemone.bigventories.storage.ChunkStorage;
 import com.somemone.bigventories.storage.GroupStorage;
 import com.somemone.bigventories.storage.OpenStorage;
@@ -13,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,13 +29,13 @@ public class AdminCommand implements CommandExecutor {
 
             Player player = (Player) sender;
 
-            if (args.length > 1) {
+            if (args.length == 3) {
                 switch (args[1]) {
 
                     case "ps":
                         PersonalStorage ps = null;
-                        for (PersonalStorage pes : Bigventories.personalStorages) {
-                            if (pes.owner == Bukkit.getPlayer(args[2])) {
+                        for (PersonalStorage pes : StoragePlus.personalStorages) {
+                            if (pes.owner == Bukkit.getOfflinePlayer(args[2])) {
                                 ps = pes;
                             }
                         }
@@ -41,8 +43,8 @@ public class AdminCommand implements CommandExecutor {
                         switch (args[0]) {
                             case "view":
                                 if (sender.hasPermission("bva.view")) {
-                                    if (Bigventories.openStorages.size() > 0) {
-                                        for (OpenStorage os : Bigventories.openStorages) {
+                                    if (StoragePlus.openStorages.size() > 0) {
+                                        for (OpenStorage os : StoragePlus.openStorages) {
                                             if (os.uuid == ps.uuid) {
                                                 player.openInventory(os.inventory.get(0));
 
@@ -53,7 +55,7 @@ public class AdminCommand implements CommandExecutor {
 
                                     ArrayList<Inventory> inventories = ps.buildInventories();
                                     OpenStorage openStorage = new OpenStorage(inventories, ps.uuid);
-                                    Bigventories.openStorages.add(openStorage);
+                                    StoragePlus.openStorages.add(openStorage);
                                     player.openInventory(openStorage.inventory.get(0));
 
                                     return true;
@@ -65,18 +67,18 @@ public class AdminCommand implements CommandExecutor {
                             case "delete":
 
                                 if (sender.hasPermission("bva.delete")) {
-                                    if (Bigventories.openStorages.size() > 0) {
+                                    if (StoragePlus.openStorages.size() > 0) {
 
-                                        for (OpenStorage os : Bigventories.openStorages) {
+                                        for (OpenStorage os : StoragePlus.openStorages) {
                                             if (os.uuid == ps.uuid) {
                                                 for (Player viewer : os.getViewers()) {
                                                     viewer.closeInventory();
                                                 }
-                                                Bigventories.personalStorages.remove(ps);
-                                                sender.sendMessage(ChatColor.GREEN + args[2] + "'s Personal Storage has been wiped!");
                                             }
                                         }
                                     }
+                                    StoragePlus.personalStorages.remove(ps);
+                                    sender.sendMessage(ChatColor.GREEN + args[2] + "'s Personal Storage has been wiped!");
 
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "You do not have access to this command.");
@@ -104,7 +106,7 @@ public class AdminCommand implements CommandExecutor {
                         }
 
                         ChunkStorage cs = null;
-                        for (ChunkStorage chs : Bigventories.chunkStorages) {
+                        for (ChunkStorage chs : StoragePlus.chunkStorages) {
                             if (chs.x == x && chs.z == z) {
                                 cs = chs;
                             }
@@ -117,8 +119,8 @@ public class AdminCommand implements CommandExecutor {
                         switch (args[0]) {
                             case "view":
                                 if (sender.hasPermission("bva.view")) {
-                                    if (Bigventories.openStorages.size() > 0) {
-                                        for (OpenStorage os : Bigventories.openStorages) {
+                                    if (StoragePlus.openStorages.size() > 0) {
+                                        for (OpenStorage os : StoragePlus.openStorages) {
                                             if (os.uuid == cs.uuid) {
                                                 player.openInventory(os.inventory.get(0));
 
@@ -129,7 +131,7 @@ public class AdminCommand implements CommandExecutor {
 
                                     ArrayList<Inventory> inventories = cs.buildInventories();
                                     OpenStorage openStorage = new OpenStorage(inventories, cs.uuid);
-                                    Bigventories.openStorages.add(openStorage);
+                                    StoragePlus.openStorages.add(openStorage);
                                     player.openInventory(openStorage.inventory.get(0));
 
                                     return true;
@@ -140,18 +142,17 @@ public class AdminCommand implements CommandExecutor {
                             case "delete":
 
                                 if (sender.hasPermission("bva.delete")) {
-                                    if (Bigventories.openStorages.size() > 0) {
-
-                                        for (OpenStorage os : Bigventories.openStorages) {
+                                    if (StoragePlus.openStorages.size() > 0) {
+                                        for (OpenStorage os : StoragePlus.openStorages) {
                                             if (os.uuid == cs.uuid) {
                                                 for (Player viewer : os.getViewers()) {
                                                     viewer.closeInventory();
                                                 }
-                                                Bigventories.chunkStorages.remove(cs);
-                                                sender.sendMessage(ChatColor.GREEN + "Chunk Storage has been wiped!");
                                             }
                                         }
                                     }
+                                    StoragePlus.chunkStorages.remove(cs);
+                                    sender.sendMessage(ChatColor.GREEN + "Chunk Storage has been wiped!");
 
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "You do not have access to this command.");
@@ -163,8 +164,8 @@ public class AdminCommand implements CommandExecutor {
 
                         if (args.length == 3) {
                             GroupStorage gs = null;
-                            for (GroupStorage grs : Bigventories.groupStorages) {
-                                if (grs.name == args[2]) {
+                            for (GroupStorage grs : StoragePlus.groupStorages) {
+                                if (grs.name.equals(args[2])) {
                                     gs = grs;
                                 }
                             }
@@ -172,8 +173,8 @@ public class AdminCommand implements CommandExecutor {
                             switch (args[0]) {
                                 case "view":
                                     if (sender.hasPermission("bva.view")) {
-                                        if (Bigventories.openStorages.size() > 0) {
-                                            for (OpenStorage os : Bigventories.openStorages) {
+                                        if (StoragePlus.openStorages.size() > 0) {
+                                            for (OpenStorage os : StoragePlus.openStorages) {
                                                 if (os.uuid == gs.uuid) {
                                                     player.openInventory(os.inventory.get(0));
 
@@ -184,7 +185,7 @@ public class AdminCommand implements CommandExecutor {
 
                                         ArrayList<Inventory> inventories = gs.buildInventories();
                                         OpenStorage openStorage = new OpenStorage(inventories, gs.uuid);
-                                        Bigventories.openStorages.add(openStorage);
+                                        StoragePlus.openStorages.add(openStorage);
                                         player.openInventory(openStorage.inventory.get(0));
 
                                         return true;
@@ -195,18 +196,18 @@ public class AdminCommand implements CommandExecutor {
 
                                 case "delete":
                                     if (sender.hasPermission("bva.delete")) {
-                                        if (Bigventories.openStorages.size() > 0) {
-
-                                            for (OpenStorage os : Bigventories.openStorages) {
+                                        if (StoragePlus.openStorages.size() > 0) {
+                                            for (OpenStorage os : StoragePlus.openStorages) {
                                                 if (os.uuid == gs.uuid) {
                                                     for (Player viewer : os.getViewers()) {
                                                         viewer.closeInventory();
                                                     }
-                                                    Bigventories.groupStorages.remove(gs);
-                                                    sender.sendMessage(ChatColor.GREEN + "Chunk Storage has been wiped!");
                                                 }
                                             }
                                         }
+
+                                        StoragePlus.groupStorages.remove(gs);
+                                        sender.sendMessage(ChatColor.GREEN + "Group Storage has been wiped!");
 
                                     } else {
                                         sender.sendMessage(ChatColor.RED + "You do not have access to this command.");
@@ -230,12 +231,12 @@ public class AdminCommand implements CommandExecutor {
                         break;
 
                 }
-            } else if (args.length == 1) {
+            } else if (args.length == 1 || args.length == 2) {
                 switch (args[0]) {
                     case "save":
                         if (sender.hasPermission("bva.save")) {
                             try {
-                                Bigventories.saveStorages();
+                                StoragePlus.saveStorages();
                                 sender.sendMessage(ChatColor.GREEN + "Storages successfully saved!");
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -249,18 +250,18 @@ public class AdminCommand implements CommandExecutor {
                             try {
                                 sender.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Loading to last saved configuration...");
 
-                                for (OpenStorage os : Bigventories.openStorages) {
+                                for (OpenStorage os : StoragePlus.openStorages) {
                                     for (Player viewer : os.getViewers()) {
                                         viewer.closeInventory();
                                     }
                                 }
 
-                                Bigventories.openStorages = new ArrayList<>();
-                                Bigventories.personalStorages = new ArrayList<>();
-                                Bigventories.chunkStorages = new ArrayList<>();
-                                Bigventories.groupStorages = new ArrayList<>();
+                                StoragePlus.openStorages = new ArrayList<>();
+                                StoragePlus.personalStorages = new ArrayList<>();
+                                StoragePlus.chunkStorages = new ArrayList<>();
+                                StoragePlus.groupStorages = new ArrayList<>();
 
-                                Bigventories.loadStorages();
+                                StoragePlus.loadStorages();
                             } catch (InvalidConfigurationException e) {
                                 e.printStackTrace();
                             } catch (IOException e) {
@@ -268,6 +269,18 @@ public class AdminCommand implements CommandExecutor {
                             }
                         }
                         break;
+                    case "voucher":
+                        sender.sendMessage(ChatColor.GOLD + "Created Voucher!");
+
+                        if (sender.hasPermission("bva.voucher")) {
+                            if (args.length == 2) {
+                                ItemStack item = new VoucherItem( Integer.parseInt(args[1]) ).getItem();
+                                player.getInventory().addItem(item);
+                            } else {
+                                return false;
+                            }
+
+                        }
                 }
             }
 

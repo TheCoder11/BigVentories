@@ -1,9 +1,10 @@
 package com.somemone.bigventories.command;
 
-import com.somemone.bigventories.Bigventories;
+import com.somemone.bigventories.StoragePlus;
 import com.somemone.bigventories.storage.OpenStorage;
 import com.somemone.bigventories.storage.PersonalStorage;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,16 +22,16 @@ public class PersonalStorageCommand implements CommandExecutor {
             Player player = (Player) sender;
 
             if (args.length == 0) {
-                if (Bigventories.personalStorages.size() > 0) {
+                if (StoragePlus.personalStorages.size() > 0) {
 
-                    for (PersonalStorage ps : Bigventories.personalStorages) {
+                    for (PersonalStorage ps : StoragePlus.personalStorages) {
 
-                        if (ps.owner == player) {
+                        if (ps.owner == (OfflinePlayer) player) {
 
                             // Check for open inventory
 
-                            if (Bigventories.openStorages.size() > 0) {
-                                for (OpenStorage os : Bigventories.openStorages) {
+                            if (StoragePlus.openStorages.size() > 0) {
+                                for (OpenStorage os : StoragePlus.openStorages) {
                                     if (os.uuid == ps.uuid) {
                                         player.openInventory(os.inventory.get(0));
 
@@ -43,7 +44,7 @@ public class PersonalStorageCommand implements CommandExecutor {
 
                             OpenStorage openStorage = new OpenStorage(inventories, ps.uuid);
 
-                            Bigventories.openStorages.add(openStorage);
+                            StoragePlus.openStorages.add(openStorage);
 
                             player.openInventory(openStorage.inventory.get(0));
 
@@ -60,8 +61,8 @@ public class PersonalStorageCommand implements CommandExecutor {
             switch (args[0]) {
                 case "create":
 
-                    if (Bigventories.personalStorages.size() > 0) {
-                        for (PersonalStorage ups : Bigventories.personalStorages) {
+                    if (StoragePlus.personalStorages.size() > 0) {
+                        for (PersonalStorage ups : StoragePlus.personalStorages) {
                             if (ups.owner == player) {
                                 sender.sendMessage(ChatColor.RED + "You already have a personal storage!");
                                 return true;
@@ -69,10 +70,10 @@ public class PersonalStorageCommand implements CommandExecutor {
                         }
                     }
 
-                    if (Bigventories.configHandler.getPersonalStoragePrice(1) < Bigventories.getEcon().getBalance(player) && Bigventories.configHandler.getPersonalStoragePrice(1) != 0) {
-                        Bigventories.getEcon().withdrawPlayer(player, Bigventories.configHandler.getPersonalStoragePrice(1));
+                    if (StoragePlus.configHandler.getPersonalStoragePrice(1) < StoragePlus.getEcon().getBalance(player) && StoragePlus.configHandler.getPersonalStoragePrice(1) != 0) {
+                        StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getPersonalStoragePrice(1));
                         PersonalStorage cps = new PersonalStorage(7, player);
-                        Bigventories.personalStorages.add(cps);
+                        StoragePlus.personalStorages.add(cps);
 
                         sender.sendMessage(ChatColor.GREEN + "Personal Storage successfully created!");
                     } else {
@@ -88,15 +89,15 @@ public class PersonalStorageCommand implements CommandExecutor {
                     } catch (NumberFormatException | NullPointerException ignored) {
                     }
 
-                    if (Bigventories.personalStorages.size() > 0) {
+                    if (StoragePlus.personalStorages.size() > 0) {
 
-                        for (PersonalStorage upps : Bigventories.personalStorages) {
+                        for (PersonalStorage upps : StoragePlus.personalStorages) {
 
                             if (upps.owner == player) {
 
-                                if (Bigventories.configHandler.getPersonalStoragePrice(rowsToAdd) < Bigventories.getEcon().getBalance(player) && Bigventories.configHandler.getPersonalStoragePrice(1) != 0) {
-                                    Bigventories.getEcon().withdrawPlayer(player, Bigventories.configHandler.getPersonalStoragePrice(rowsToAdd));
-                                    upps.rows = upps.rows + rowsToAdd;
+                                if (StoragePlus.configHandler.getPersonalStoragePrice(rowsToAdd) < StoragePlus.getEcon().getBalance(player) && StoragePlus.configHandler.getPersonalStoragePrice(1) != 0) {
+                                    StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getPersonalStoragePrice(rowsToAdd));
+                                    upps.addRows(rowsToAdd);
                                     sender.sendMessage(ChatColor.GREEN + "Personal Storage successfully upgraded!");
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "Insufficient funds!");

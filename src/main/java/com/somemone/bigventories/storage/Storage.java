@@ -1,5 +1,6 @@
 package com.somemone.bigventories.storage;
 
+import com.somemone.bigventories.StoragePlus;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -40,7 +41,7 @@ public class Storage {
         pBMeta.setDisplayName(ChatColor.RED + "PREVIOUS PAGE");
         prevButton.setItemMeta(pBMeta);
 
-        glassPane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        glassPane = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
         ItemMeta gPMeta = glassPane.getItemMeta();
         gPMeta.setDisplayName(ChatColor.GOLD + "|");
         glassPane.setItemMeta(gPMeta);
@@ -65,11 +66,6 @@ public class Storage {
         ItemMeta gPMeta = glassPane.getItemMeta();
         gPMeta.setDisplayName(ChatColor.GOLD + "|");
         glassPane.setItemMeta(gPMeta);
-    }
-
-    private boolean checkRows() {
-        int maxSize = this.rows * 9;
-        return maxSize <= this.items.size();
     }
 
     public ArrayList<Inventory> buildInventories ( ) {
@@ -103,15 +99,15 @@ public class Storage {
 
             }
 
-            inv.setItem( invSize - 9, prevButton);
+            inv.setItem( invSize - 9, glassPane);
             inv.setItem( invSize - 8, glassPane);
             inv.setItem( invSize - 7, glassPane);
-            inv.setItem( invSize - 6, glassPane);
+            inv.setItem( invSize - 6, prevButton);
             inv.setItem( invSize - 5, glassPane);
-            inv.setItem( invSize - 4, glassPane);
+            inv.setItem( invSize - 4, nextButton);
             inv.setItem( invSize - 3, glassPane);
             inv.setItem( invSize - 2, glassPane);
-            inv.setItem( invSize - 1, nextButton);
+            inv.setItem( invSize - 1, glassPane);
 
             inventories.add( inv ) ;
 
@@ -119,6 +115,26 @@ public class Storage {
 
         return inventories;
 
+    }
+
+    public void addRows (int rows) {
+        if (StoragePlus.openStorages.size() == 0) {
+            OpenStorage toDelete = null;
+            for (OpenStorage os : StoragePlus.openStorages) {
+                if (os.uuid == this.uuid) {
+                    for (Player player : os.getViewers()) {
+                        player.closeInventory();
+                        player.sendMessage(ChatColor.GOLD + "This storage has been upgraded!");
+                    }
+                }
+            }
+
+            if (toDelete != null) {
+                StoragePlus.openStorages.remove(toDelete);
+            }
+        }
+
+        this.rows = this.rows + rows;
     }
 
 }

@@ -1,6 +1,6 @@
 package com.somemone.bigventories.command;
 
-import com.somemone.bigventories.Bigventories;
+import com.somemone.bigventories.StoragePlus;
 import com.somemone.bigventories.storage.ChunkStorage;
 import com.somemone.bigventories.storage.OpenStorage;
 import org.bukkit.ChatColor;
@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class ChunkStorageCommand  implements CommandExecutor {
@@ -22,13 +21,13 @@ public class ChunkStorageCommand  implements CommandExecutor {
             Player player = (Player) sender;
 
             if (args.length == 0) {
-                if (Bigventories.chunkStorages.size() > 0) {
+                if (StoragePlus.chunkStorages.size() > 0) {
 
-                    for (ChunkStorage cs : Bigventories.chunkStorages) {
+                    for (ChunkStorage cs : StoragePlus.chunkStorages) {
 
                         if (cs.checkChunk(player.getLocation().getChunk())) {
 
-                            for (OpenStorage os : Bigventories.openStorages) {
+                            for (OpenStorage os : StoragePlus.openStorages) {
                                 if (os.uuid == cs.uuid) {
 
                                     player.openInventory(os.inventory.get(0));
@@ -40,7 +39,7 @@ public class ChunkStorageCommand  implements CommandExecutor {
 
                             ArrayList<Inventory> inventories = cs.buildInventories();
                             OpenStorage os = new OpenStorage(inventories, cs.uuid);
-                            Bigventories.openStorages.add(os);
+                            StoragePlus.openStorages.add(os);
                             player.openInventory(os.inventory.get(0));
 
                             return true;
@@ -60,7 +59,7 @@ public class ChunkStorageCommand  implements CommandExecutor {
 
                     ChunkStorage newCS = new ChunkStorage(1, player.getLocation().getChunk().getX(), player.getLocation().getChunk().getZ());
 
-                    for (ChunkStorage cs : Bigventories.chunkStorages) {
+                    for (ChunkStorage cs : StoragePlus.chunkStorages) {
 
                         if (cs.x == newCS.x && cs.z == newCS.z) {
 
@@ -71,12 +70,9 @@ public class ChunkStorageCommand  implements CommandExecutor {
 
                     }
 
-                    sender.sendMessage(String.valueOf( Bigventories.configHandler.getPersonalStoragePrice(1) ));
-                    sender.sendMessage(String.valueOf( Bigventories.plugin.getConfig().getBoolean("personal-storage.purchaseable") ));
-
-                    if (Bigventories.configHandler.getPersonalStoragePrice(1) < Bigventories.getEcon().getBalance(player) && Bigventories.configHandler.getPersonalStoragePrice(1) != 0) {
-                        Bigventories.getEcon().withdrawPlayer(player, Bigventories.configHandler.getPersonalStoragePrice(1));
-                        Bigventories.chunkStorages.add(newCS);
+                    if (StoragePlus.configHandler.getPersonalStoragePrice(1) < StoragePlus.getEcon().getBalance(player) && StoragePlus.configHandler.getPersonalStoragePrice(1) != 0) {
+                        StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getPersonalStoragePrice(1));
+                        StoragePlus.chunkStorages.add(newCS);
                         sender.sendMessage(ChatColor.GREEN + "Chunk Storage successfully created!");
                     } else {
                         sender.sendMessage(ChatColor.RED + "Insufficient Funds");
@@ -94,15 +90,15 @@ public class ChunkStorageCommand  implements CommandExecutor {
                     } catch (NumberFormatException | ArrayIndexOutOfBoundsException ignored) {
                     }
 
-                    if (Bigventories.chunkStorages.size() > 0) {
+                    if (StoragePlus.chunkStorages.size() > 0) {
 
-                        for (ChunkStorage upcs : Bigventories.chunkStorages) {
+                        for (ChunkStorage upcs : StoragePlus.chunkStorages) {
 
                             if (upcs.checkChunk(player.getLocation().getChunk())) {
 
-                                if (Bigventories.getEcon().getBalance(player) > Bigventories.configHandler.getChunkStoragePrice(rowsToAdd) && Bigventories.configHandler.getChunkStoragePrice(1) > 0) {
-                                    Bigventories.getEcon().withdrawPlayer(player, Bigventories.configHandler.getChunkStoragePrice(rowsToAdd));
-                                    upcs.rows = upcs.rows + rowsToAdd;
+                                if (StoragePlus.getEcon().getBalance(player) > StoragePlus.configHandler.getChunkStoragePrice(rowsToAdd) && StoragePlus.configHandler.getChunkStoragePrice(1) > 0) {
+                                    StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getChunkStoragePrice(rowsToAdd));
+                                    upcs.addRows(rowsToAdd);
                                     sender.sendMessage(ChatColor.GREEN + "Chunk Storage successfully upgraded!");
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "Insufficient Funds");
