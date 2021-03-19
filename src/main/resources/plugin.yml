@@ -1,6 +1,6 @@
 name: StoragePlus
-version: ${project.version}
-main: com.somemone.bigventories.StoragePlus
+version: 1.0
+main: com.somemone.storageplus.StoragePlus
 api-version: 1.16
 
 commands:
@@ -24,6 +24,10 @@ commands:
     aliases: bva
     usage: "Usage: /bvadmin [save|load|view|delete]"
     permission: "bva.use"
+
+  staccept:
+    description: Accept command for Group Storages
+    aliases: sta
 
 permissions:
   bva.use:
