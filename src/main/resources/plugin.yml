@@ -19,55 +19,54 @@ commands:
     aliases: [gs, groupstorage]
     usage: "Usage: /gstorage [create|remove|invite|setowner|upgrade]"
 
-  bvadmin:
+  stadmin:
     description: Admin Commands for BigVentories
-    aliases: bva
-    usage: "Usage: /bvadmin [save|load|view|delete]"
-    permission: "bva.use"
+    aliases: sta
+    usage: "Usage: /stadmin [save|load|view|delete|getplayers]"
+    permission: "sta.use"
 
   staccept:
     description: Accept command for Group Storages
-    aliases: sta
 
 permissions:
-  bva.use:
+  sta.use:
     description: Allows you to use the /bva command
     default: op
 
-  bva.getplayers:
+  sta.getplayers:
     description: Allows you to view the players in a group
     default: op
 
-  bva.view:
+  sta.view:
     description: Allows you to view all types of inventories.
     default: op
 
-  bva.delete:
+  sta.delete:
     description: Allows the player to delete inventories
     default: op
 
-  bva.save:
+  sta.save:
     description: Allows the player to save the game
     default: op
 
-  bva.load:
+  sta.load:
     description: Allows the player to load the game
     default: op
 
-  bva.voucher:
+  sta.voucher:
     description: Allows user to create vouchers
     default: op
 
-  bva.*:
+  sta.*:
     description: Allows you to use all bva commands
     default: op
     children:
-      bva.view: true
-      bva.use: true
-      bva.delete: true
-      bva.save: true
-      bva.load: true
-      bva.getplayers: true
+      sta.view: true
+      sta.use: true
+      sta.delete: true
+      sta.save: true
+      sta.load: true
+      sta.getplayers: true
 
 
 

@@ -6,6 +6,7 @@ import com.somemone.storageplus.item.VoucherItem;
 import com.somemone.storageplus.storage.ChunkStorage;
 import com.somemone.storageplus.storage.GroupStorage;
 import com.somemone.storageplus.storage.PersonalStorage;
+import com.somemone.storageplus.storage.Storage;
 import com.somemone.storageplus.util.SearchHandler;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
@@ -23,7 +24,7 @@ public class VoucherListener implements Listener {
 
     private HashMap<UUID, VoucherInventory> rowsRemaining = new HashMap<>();
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onInventoryClick (InventoryClickEvent event ) {
         if (event.getView().getTitle().equals("Voucher")) {
             if (event.getCurrentItem() != null) {
@@ -117,6 +118,20 @@ public class VoucherListener implements Listener {
 
                     event.setCancelled(true);
                     return;
+
+                } else if ( event.getCurrentItem().equals(VoucherInventory.createChunk)) {
+
+                    vInv.removeRows(1);
+
+                    ChunkStorage newCS = new ChunkStorage(1, event.getWhoClicked().getLocation().getChunk().getX(), event.getWhoClicked().getLocation().getChunk().getZ());
+                    StoragePlus.chunkStorages.add(newCS);
+
+                } else if (event.getCurrentItem().equals(VoucherInventory.createPersonal)) {
+
+                    vInv.removeRows(1);
+
+                    PersonalStorage newCS = new PersonalStorage(1, event.getWhoClicked().getUniqueId());
+                    StoragePlus.personalStorages.add(newCS);
 
                 }
 

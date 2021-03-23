@@ -3,6 +3,7 @@ package com.somemone.storageplus.command;
 import com.somemone.storageplus.StoragePlus;
 import com.somemone.storageplus.storage.OpenStorage;
 import com.somemone.storageplus.storage.PersonalStorage;
+import com.somemone.storageplus.util.FileHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -21,38 +22,45 @@ public class PersonalStorageCommand implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
+            PersonalStorage ps = FileHandler.loadPersonalStorage(player.getUniqueId());
+
+            if (ps == null) return false;
+
             if (args.length == 0) {
-                if (StoragePlus.personalStorages.size() > 0) {
+                if (StoragePlus.personalStorages.size() == 0) return false;
 
-                    for (PersonalStorage ps : StoragePlus.personalStorages) {
+                for (PersonalStorage ps : StoragePlus.personalStorages) {
 
-                        if (ps.owner.equals(player.getUniqueId())) {
+                    sender.sendMessage(ps.owner.toString());
+                    sender.sendMessage(player.getUniqueId().toString());
 
-                            // Check for open inventory
+                    if (ps.owner.equals(player.getUniqueId())) {
 
-                            if (StoragePlus.openStorages.size() > 0) {
-                                for (OpenStorage os : StoragePlus.openStorages) {
-                                    if (os.uuid == ps.uuid) {
-                                        player.openInventory(os.inventory.get(0));
+                        // Check for open inventory
 
-                                        return true;
-                                    }
+                        if (StoragePlus.openStorages.size() > 0) {
+                            for (OpenStorage os : StoragePlus.openStorages) {
+                                if (os.uuid == ps.uuid) {
+                                    player.openInventory(os.inventory.get(0));
+
+                                    return true;
                                 }
                             }
-
-                            ArrayList<Inventory> inventories = ps.buildInventories();
-
-                            OpenStorage openStorage = new OpenStorage(inventories, ps.uuid, true);
-
-                            StoragePlus.openStorages.add(openStorage);
-
-                            player.openInventory(openStorage.inventory.get(0));
-
-                            return true;
-
                         }
 
+                        ArrayList<Inventory> inventories = ps.buildInventories();
+
+                        OpenStorage openStorage = new OpenStorage(inventories, ps.uuid, true);
+
+                        StoragePlus.openStorages.add(openStorage);
+
+                        player.openInventory(openStorage.inventory.get(0));
+
+                        return true;
+
                     }
+
+
                 }
                 sender.sendMessage(ChatColor.RED + "You do not own a Personal Storage!");
                 return true;

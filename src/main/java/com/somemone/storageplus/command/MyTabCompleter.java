@@ -23,9 +23,9 @@ public class MyTabCompleter implements org.bukkit.command.TabCompleter {
 
         List<String> list = new ArrayList<>();
 
-        if (command.getName() == "bva") {
+        if (command.getName().equals("sta")) {
             if (args.length == 1) {
-                list.addAll(Arrays.asList("save", "load", "view", "delete", "voucher"));
+                list.addAll(Arrays.asList("save", "load", "view", "delete", "voucher", "get-players"));
             } else if (args.length == 2) {
                 switch (args[0]) {
                     case "view":
@@ -33,6 +33,11 @@ public class MyTabCompleter implements org.bukkit.command.TabCompleter {
                         break;
                     case "delete":
                         list.addAll(Arrays.asList("ps", "cs", "gs"));
+                        break;
+                    case "getplayers":
+                        for (GroupStorage gs : StoragePlus.groupStorages) {
+                            list.add(gs.name);
+                        }
                         break;
                 }
             } else if (args.length == 3) {
@@ -54,7 +59,6 @@ public class MyTabCompleter implements org.bukkit.command.TabCompleter {
             }
         } else if (command.getAliases().contains("ps")) {
             if (args.length == 1) {
-                player.sendMessage("This was fired!");
                 list.addAll(Arrays.asList("create", "upgrade"));
             }
         } else if (command.getAliases().contains("cs")) {
@@ -121,8 +125,10 @@ public class MyTabCompleter implements org.bukkit.command.TabCompleter {
 
     public List<String> findPlayersInStorages (GroupStorage gs) {
         List<String> list = new ArrayList<>();
-        for (UUID uuid : gs.accessList) {
-            list.add( Bukkit.getOfflinePlayer(uuid).getName() );
+        if (gs != null) {
+            for (UUID uuid : gs.accessList) {
+                list.add(Bukkit.getOfflinePlayer(uuid).getName());
+            }
         }
         return list;
     }

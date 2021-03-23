@@ -28,9 +28,9 @@ public final class StoragePlus extends JavaPlugin {
     public static ArrayList<OpenStorage> openStorages;
     public static ConfigHandler configHandler;
 
-    public static ArrayList<PersonalStorage> personalStorages;
-    public static ArrayList<ChunkStorage> chunkStorages;
-    public static ArrayList<GroupStorage> groupStorages;
+    // public static ArrayList<PersonalStorage> personalStorages;
+    // public static ArrayList<ChunkStorage> chunkStorages;
+    // public static ArrayList<GroupStorage> groupStorages;
     public static StoragePlus plugin;
 
     public static ArrayList<Player> closedByPlugin;
@@ -44,9 +44,9 @@ public final class StoragePlus extends JavaPlugin {
     @Override
     public void onEnable() {
         
-        personalStorages = new ArrayList<>();
-        chunkStorages = new ArrayList<>();
-        groupStorages = new ArrayList<>();
+        //personalStorages = new ArrayList<>();
+        //chunkStorages = new ArrayList<>();
+        //groupStorages = new ArrayList<>();
         openStorages = new ArrayList<>();
         closedByPlugin = new ArrayList<>();
         dataFolder = this.getDataFolder();
@@ -60,21 +60,16 @@ public final class StoragePlus extends JavaPlugin {
          getCommand("pstorage").setExecutor(new PersonalStorageCommand());
          getCommand("cstorage").setExecutor(new ChunkStorageCommand());
          getCommand("gstorage").setExecutor(new GroupStorageCommand());
-         getCommand("bvadmin").setExecutor(new AdminCommand());
+         getCommand("stadmin").setExecutor(new AdminCommand());
          getCommand("staccept").setExecutor(new AcceptCommand());
 
          getCommand("pstorage").setTabCompleter(new MyTabCompleter());
         getCommand("cstorage").setTabCompleter(new MyTabCompleter());
         getCommand("gstorage").setTabCompleter(new MyTabCompleter());
-        getCommand("bvadmin").setTabCompleter(new MyTabCompleter());
+        getCommand("stadmin").setTabCompleter(new MyTabCompleter());
 
 
 
-        try {
-            loadStorages();
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
 
         if (!setupEconomy()) {
             Logger.getLogger("Minecraft").severe("Bigventories disabled due to no Vault dependency found!");
@@ -91,15 +86,11 @@ public final class StoragePlus extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
 
-        try {
-            saveStorages();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
 
-
+/**
     public static void saveStorages () throws IOException {
         // Closing all OpenStorages to permanent storage
 
@@ -290,6 +281,7 @@ public final class StoragePlus extends JavaPlugin {
         }
 
     }
+ **/
 
     public static Economy getEcon() {
         return econ;

@@ -21,6 +21,8 @@ public class GroupStorageCommand implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
+            if (args.length == 0) return false;
+
             if (args.length == 1) {
                 if (StoragePlus.groupStorages.size() > 0) {
 
@@ -60,6 +62,11 @@ public class GroupStorageCommand implements CommandExecutor {
             switch (args[0]) {
 
                 case "upgrade":  // /gs upgrade group-name 3
+
+                    if (true) {
+                        sender.sendMessage(ChatColor.GOLD + "This command has been temporarily disabled!");
+                        return true;
+                    }
 
                     int rowsToAdd = 1;
                     try {
@@ -106,7 +113,7 @@ public class GroupStorageCommand implements CommandExecutor {
                                     if (fgs.name.equals(args[1])) {
                                         if (fgs.owner == player.getUniqueId()) {
 
-                                            if (StoragePlus.getInvitedGroupStorages(Bukkit.getOfflinePlayer(args[2]).getUniqueId()) <= StoragePlus.configHandler.getGroupStorageNum()) {
+                                            if (StoragePlus.getInvitedGroupStorages(Bukkit.getOfflinePlayer(args[2]).getUniqueId()) < StoragePlus.configHandler.getGroupStorageNum()) {
 
                                                 if (Bukkit.getOfflinePlayer(args[2]).isOnline()) {
 
@@ -163,13 +170,12 @@ public class GroupStorageCommand implements CommandExecutor {
                             }
                         }
 
-                        if (StoragePlus.configHandler.getGroupStoragePrice(1) < StoragePlus.getEcon().getBalance(player) && StoragePlus.configHandler.getGroupStoragePrice(1) != 0) {
+                        if (StoragePlus.getInvitedGroupStorages(player.getUniqueId()) < StoragePlus.configHandler.getGroupStorageNum() ) {
                             StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getGroupStoragePrice(1));
-                            newGS.accessList.add(player.getUniqueId());
                             StoragePlus.groupStorages.add(newGS);
                             sender.sendMessage(ChatColor.GREEN + "Group Storage successfully created!");
                         } else {
-                            sender.sendMessage(ChatColor.RED + "Insufficient Funds!");
+                            sender.sendMessage(ChatColor.RED + "You have too many storages!");
                         }
 
                     }
@@ -190,6 +196,7 @@ public class GroupStorageCommand implements CommandExecutor {
                                         return true;
                                     } else {
                                         sender.sendMessage(ChatColor.RED + "Player not in group");
+                                        return true;
                                     }
 
                                 } else {
@@ -211,7 +218,7 @@ public class GroupStorageCommand implements CommandExecutor {
                         if (StoragePlus.groupStorages.size() > 0) {
                             for (GroupStorage fgs : StoragePlus.groupStorages) {
 
-                                if (fgs.name.equals(args[1]) && fgs.owner == player.getUniqueId()) {
+                                if (fgs.name.equals(args[1]) && fgs.owner.equals(player.getUniqueId())) {
 
                                     fgs.owner = Bukkit.getOfflinePlayer(args[2]).getUniqueId();
                                     sender.sendMessage(ChatColor.GREEN + args[2] + " is now the owner of the Group!");
@@ -231,7 +238,8 @@ public class GroupStorageCommand implements CommandExecutor {
                         if (StoragePlus.groupStorages.size() > 0) {
                             GroupStorage storageToDelete = null;
                             for (GroupStorage fgs : StoragePlus.groupStorages) {
-                                if (fgs.name.equals(args[1]) && fgs.owner == player.getUniqueId()) {
+
+                                if (fgs.name.equals(args[1]) && fgs.owner.equals(player.getUniqueId())) {
                                     storageToDelete = fgs;
                                 }
                             }

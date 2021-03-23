@@ -23,6 +23,8 @@ public class VoucherInventory {
 
     public static ItemStack upgradeOne;
     public static ItemStack upgradeAll;
+    public static ItemStack createPersonal;
+    public static ItemStack createChunk;
 
     /**
      *
@@ -44,6 +46,18 @@ public class VoucherInventory {
         ItemMeta allMeta = upgradeAll.getItemMeta();
         allMeta.setDisplayName("Upgrade All Rows");
         upgradeAll.setItemMeta(allMeta);
+
+        createPersonal = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
+        ItemMeta cpMeta = createPersonal.getItemMeta();
+        cpMeta.setDisplayName("Create Personal Storage");
+        createPersonal.setItemMeta(cpMeta);
+
+        createChunk = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
+        ItemMeta ccMeta = createChunk.getItemMeta();
+        ccMeta.setDisplayName("Create Chunk Storage");
+        createChunk.setItemMeta(ccMeta);
+
+
     }
 
     public Inventory buildInventory () {
@@ -74,6 +88,8 @@ public class VoucherInventory {
             inv.setItem(27, upgradeOne);
             inv.setItem(18, upgradeAll);
 
+        } else {
+            inv.setItem(36, createPersonal);
         }
 
         ChunkStorage cs = searchHandler.searchChunkStorage(chunk);
@@ -95,6 +111,8 @@ public class VoucherInventory {
             inv.setItem(28, upgradeOne);
             inv.setItem(19, upgradeAll);
 
+        } else {
+            inv.setItem(37, createChunk);
         }
 
         int storageSlot = 38;

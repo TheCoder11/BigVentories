@@ -43,7 +43,7 @@ public class AdminCommand implements CommandExecutor {
                         if (ps != null) {
                             switch (args[0]) {
                                 case "view":
-                                    if (sender.hasPermission("bva.view")) {
+                                    if (sender.hasPermission("sta.view")) {
                                         if (StoragePlus.openStorages.size() > 0) {
                                             for (OpenStorage os : StoragePlus.openStorages) {
                                                 if (os.uuid == ps.uuid) {
@@ -68,7 +68,7 @@ public class AdminCommand implements CommandExecutor {
 
                                 case "delete":
 
-                                    if (sender.hasPermission("bva.delete")) {
+                                    if (sender.hasPermission("sta.delete")) {
                                         if (StoragePlus.openStorages.size() > 0) {
 
                                             for (OpenStorage os : StoragePlus.openStorages) {
@@ -123,7 +123,7 @@ public class AdminCommand implements CommandExecutor {
 
                         switch (args[0]) {
                             case "view":
-                                if (sender.hasPermission("bva.view")) {
+                                if (sender.hasPermission("sta.view")) {
                                     if (StoragePlus.openStorages.size() > 0) {
                                         for (OpenStorage os : StoragePlus.openStorages) {
                                             if (os.uuid == cs.uuid) {
@@ -146,7 +146,7 @@ public class AdminCommand implements CommandExecutor {
                                 break;
                             case "delete":
 
-                                if (sender.hasPermission("bva.delete")) {
+                                if (sender.hasPermission("sta.delete")) {
                                     if (StoragePlus.openStorages.size() > 0) {
                                         for (OpenStorage os : StoragePlus.openStorages) {
                                             if (os.uuid == cs.uuid) {
@@ -177,7 +177,7 @@ public class AdminCommand implements CommandExecutor {
 
                             switch (args[0]) {
                                 case "view":
-                                    if (sender.hasPermission("bva.view")) {
+                                    if (sender.hasPermission("sta.view")) {
                                         if (StoragePlus.openStorages.size() > 0) {
                                             for (OpenStorage os : StoragePlus.openStorages) {
                                                 if (os.uuid == gs.uuid) {
@@ -200,7 +200,7 @@ public class AdminCommand implements CommandExecutor {
                                     break;
 
                                 case "delete":
-                                    if (sender.hasPermission("bva.delete")) {
+                                    if (sender.hasPermission("sta.delete")) {
                                         if (StoragePlus.openStorages.size() > 0) {
                                             for (OpenStorage os : StoragePlus.openStorages) {
                                                 if (os.uuid == gs.uuid) {
@@ -219,7 +219,7 @@ public class AdminCommand implements CommandExecutor {
                                     }
                                     break;
                                 case "getplayers":
-                                    if (sender.hasPermission("bva.getplayers")) {
+                                    if (sender.hasPermission("sta.getplayers")) {
 
                                         String playerList = "Players: " + ChatColor.GREEN + "";
                                         for (UUID uuid : gs.accessList) {
@@ -227,6 +227,8 @@ public class AdminCommand implements CommandExecutor {
                                                 playerList = playerList + Bukkit.getOfflinePlayer(uuid).getName() + ", ";
                                             }
                                         }
+
+                                        sender.sendMessage(playerList);
 
                                     }
                             }
@@ -239,7 +241,7 @@ public class AdminCommand implements CommandExecutor {
             } else if (args.length == 1 || args.length == 2) {
                 switch (args[0]) {
                     case "save":
-                        if (sender.hasPermission("bva.save")) {
+                        if (sender.hasPermission("sta.save")) {
                             try {
                                 StoragePlus.saveStorages();
                                 sender.sendMessage(ChatColor.GREEN + "Storages successfully saved!");
@@ -251,7 +253,7 @@ public class AdminCommand implements CommandExecutor {
                         }
                         break;
                     case "load":
-                        if (sender.hasPermission("bva.load")) {
+                        if (sender.hasPermission("sta.load")) {
                             try {
                                 sender.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Loading to last saved configuration...");
 
@@ -277,7 +279,7 @@ public class AdminCommand implements CommandExecutor {
                     case "voucher":
                         sender.sendMessage(ChatColor.GOLD + "Created Voucher!");
 
-                        if (sender.hasPermission("bva.voucher")) {
+                        if (sender.hasPermission("sta.voucher")) {
                             if (args.length == 2) {
                                 ItemStack item = new VoucherItem( Integer.parseInt(args[1]) ).getItem();
                                 player.getInventory().addItem(item);

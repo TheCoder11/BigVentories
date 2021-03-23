@@ -10,6 +10,13 @@ public class PersonalStorage extends Storage {
 
     public UUID owner;
 
+    /**
+     *
+     *
+     *
+     * @param rows
+     * @param owner
+     */
     public PersonalStorage(int rows, UUID owner) {
         super(rows);
 
