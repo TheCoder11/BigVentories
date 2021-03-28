@@ -6,6 +6,7 @@ import com.somemone.storageplus.storage.ChunkStorage;
 import com.somemone.storageplus.storage.GroupStorage;
 import com.somemone.storageplus.storage.OpenStorage;
 import com.somemone.storageplus.storage.PersonalStorage;
+import com.somemone.storageplus.util.FileHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -33,12 +34,7 @@ public class AdminCommand implements CommandExecutor {
                 switch (args[1]) {
 
                     case "ps":
-                        PersonalStorage ps = null;
-                        for (PersonalStorage pes : StoragePlus.personalStorages) {
-                            if (pes.owner.equals(Bukkit.getOfflinePlayer(args[2]).getUniqueId())) {
-                                ps = pes;
-                            }
-                        }
+                        PersonalStorage ps = FileHandler.loadPersonalStorage(player.getUniqueId());
 
                         if (ps != null) {
                             switch (args[0]) {
@@ -79,7 +75,7 @@ public class AdminCommand implements CommandExecutor {
                                                 }
                                             }
                                         }
-                                        StoragePlus.personalStorages.remove(ps);
+                                        FileHandler.deleteStorage(ps.uuid);
                                         sender.sendMessage(ChatColor.GREEN + args[2] + "'s Personal Storage has been wiped!");
 
                                     } else {
@@ -110,15 +106,10 @@ public class AdminCommand implements CommandExecutor {
                             return false;
                         }
 
-                        ChunkStorage cs = null;
-                        for (ChunkStorage chs : StoragePlus.chunkStorages) {
-                            if (chs.x == x && chs.z == z) {
-                                cs = chs;
-                            }
-                        }
+                        ChunkStorage cs = FileHandler.loadChunkStorage(x, z);
 
-                        if (cs == null) {
-                            sender.sendMessage(ChatColor.RED + "A Chunk Storage does not exist on this ");
+                        if (!cs.isEmpty) {
+                            sender.sendMessage(ChatColor.RED + "A Chunk Storage does not exist on this chunk");
                         }
 
                         switch (args[0]) {
@@ -156,7 +147,7 @@ public class AdminCommand implements CommandExecutor {
                                             }
                                         }
                                     }
-                                    StoragePlus.chunkStorages.remove(cs);
+                                    FileHandler.deleteStorage(cs.uuid);
                                     sender.sendMessage(ChatColor.GREEN + "Chunk Storage has been wiped!");
 
                                 } else {
@@ -168,12 +159,7 @@ public class AdminCommand implements CommandExecutor {
                     case "gs":
 
                         if (args.length == 3) {
-                            GroupStorage gs = null;
-                            for (GroupStorage grs : StoragePlus.groupStorages) {
-                                if (grs.name.equals(args[2])) {
-                                    gs = grs;
-                                }
-                            }
+                            GroupStorage gs = FileHandler.loadGroupStorage(args[2]);
 
                             switch (args[0]) {
                                 case "view":
@@ -211,7 +197,7 @@ public class AdminCommand implements CommandExecutor {
                                             }
                                         }
 
-                                        StoragePlus.groupStorages.remove(gs);
+                                        FileHandler.deleteStorage(gs.uuid);
                                         sender.sendMessage(ChatColor.GREEN + "Group Storage has been wiped!");
 
                                     } else {
@@ -240,42 +226,6 @@ public class AdminCommand implements CommandExecutor {
                 }
             } else if (args.length == 1 || args.length == 2) {
                 switch (args[0]) {
-                    case "save":
-                        if (sender.hasPermission("sta.save")) {
-                            try {
-                                StoragePlus.saveStorages();
-                                sender.sendMessage(ChatColor.GREEN + "Storages successfully saved!");
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            sender.sendMessage(ChatColor.RED + "You do not have permission!");
-                        }
-                        break;
-                    case "load":
-                        if (sender.hasPermission("sta.load")) {
-                            try {
-                                sender.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Loading to last saved configuration...");
-
-                                for (OpenStorage os : StoragePlus.openStorages) {
-                                    for (Player viewer : os.getViewers()) {
-                                        viewer.closeInventory();
-                                    }
-                                }
-
-                                StoragePlus.openStorages = new ArrayList<>();
-                                StoragePlus.personalStorages = new ArrayList<>();
-                                StoragePlus.chunkStorages = new ArrayList<>();
-                                StoragePlus.groupStorages = new ArrayList<>();
-
-                                StoragePlus.loadStorages();
-                            } catch (InvalidConfigurationException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        break;
                     case "voucher":
                         sender.sendMessage(ChatColor.GOLD + "Created Voucher!");
 

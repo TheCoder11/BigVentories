@@ -21,6 +21,10 @@ public class GroupStorage extends Storage {
         this.name = name;
     }
 
+    public GroupStorage() {
+        super(1, true);
+    }
+
     public GroupStorage(String name, int rows, ArrayList<ItemStack> items, UUID owner, UUID uuid, ArrayList<UUID> accessList) {
         super(rows, uuid, items);
 

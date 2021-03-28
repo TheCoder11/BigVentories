@@ -6,8 +6,7 @@ import com.somemone.storageplus.item.VoucherItem;
 import com.somemone.storageplus.storage.ChunkStorage;
 import com.somemone.storageplus.storage.GroupStorage;
 import com.somemone.storageplus.storage.PersonalStorage;
-import com.somemone.storageplus.storage.Storage;
-import com.somemone.storageplus.util.SearchHandler;
+import com.somemone.storageplus.util.FileHandler;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -39,26 +38,32 @@ public class VoucherListener implements Listener {
                 if (event.getCurrentItem().equals(VoucherInventory.upgradeOne)) {
                     vInv.removeRows(1);
 
-                    SearchHandler searchHandler = new SearchHandler();
                     switch (event.getSlot()) {
                         case 27:
-                            PersonalStorage ps = searchHandler.searchPersonalStorage(vInv.getPlayer());
+                            PersonalStorage ps = FileHandler.loadPersonalStorage(vInv.getPlayer().getUniqueId());
 
-                            ps.addRows(1);
+                            if (!ps.isEmpty) {
+                                ps.addRows(1);
+                                FileHandler.saveStorage(ps);
+                            }
                             break;
                         case 28:
-                            ChunkStorage cs = searchHandler.searchChunkStorage(vInv.getChunk());
+                            ChunkStorage cs = FileHandler.loadChunkStorage(vInv.getChunk().getX(), vInv.getChunk().getZ());
 
-                            cs.addRows(1);
+                            if (!cs.isEmpty) {
+                                cs.addRows(1);
+                                FileHandler.saveStorage(cs);
+                            }
                             break;
                         default:
-
-                            GroupStorage gs = searchHandler.searchGroupStorage(event.getClickedInventory().getItem(event.getSlot() + 9).getItemMeta().getPersistentDataContainer()
+                            GroupStorage gs = FileHandler.loadGroupStorage(event.getClickedInventory().getItem(event.getSlot() + 9).getItemMeta().getPersistentDataContainer()
                                     .get(new NamespacedKey(StoragePlus.plugin, "group-name"), PersistentDataType.STRING));
 
-                            gs.addRows(1);
+                            if (!gs.isEmpty) {
+                                gs.addRows(1);
+                                FileHandler.saveStorage(gs);
+                            }
                             break;
-
                     }
 
                     if (vInv.getRows() == 0) {
@@ -84,20 +89,19 @@ public class VoucherListener implements Listener {
                 } else if (event.getCurrentItem().equals(modulatedAllRowsStack)) {
                     vInv.removeRows(originalRows);
 
-                    SearchHandler searchHandler = new SearchHandler();
                     switch (event.getSlot()) {
                         case 18:
-                            PersonalStorage ps = searchHandler.searchPersonalStorage(vInv.getPlayer());
+                            PersonalStorage ps = FileHandler.loadPersonalStorage(vInv.getPlayer().getUniqueId());
 
                             ps.addRows(originalRows);
                             break;
                         case 19:
-                            ChunkStorage cs = searchHandler.searchChunkStorage(vInv.getChunk());
+                            ChunkStorage cs = FileHandler.loadChunkStorage(vInv.getChunk().getX(), vInv.getChunk().getZ());
 
                             cs.addRows(originalRows);
                             break;
                         default:
-                            GroupStorage gs = searchHandler.searchGroupStorage(event.getClickedInventory().getItem(event.getSlot() + 18).getItemMeta().getPersistentDataContainer()
+                            GroupStorage gs = FileHandler.loadGroupStorage(event.getClickedInventory().getItem(event.getSlot() + 18).getItemMeta().getPersistentDataContainer()
                                     .get(new NamespacedKey(StoragePlus.plugin, "group-name"), PersistentDataType.STRING));
 
                             gs.addRows(originalRows);
@@ -124,14 +128,14 @@ public class VoucherListener implements Listener {
                     vInv.removeRows(1);
 
                     ChunkStorage newCS = new ChunkStorage(1, event.getWhoClicked().getLocation().getChunk().getX(), event.getWhoClicked().getLocation().getChunk().getZ());
-                    StoragePlus.chunkStorages.add(newCS);
+                    FileHandler.saveStorage(newCS);
 
                 } else if (event.getCurrentItem().equals(VoucherInventory.createPersonal)) {
 
                     vInv.removeRows(1);
 
                     PersonalStorage newCS = new PersonalStorage(1, event.getWhoClicked().getUniqueId());
-                    StoragePlus.personalStorages.add(newCS);
+                    FileHandler.saveStorage(newCS);
 
                 }
 

@@ -1,6 +1,3 @@
-# The default number of group inventories that a player has access to:
-default-player-groups: 7
-
 # The rows each player starts with
 player-starting-rows: 1
 
@@ -8,30 +5,17 @@ vault-pricing: true
 
 #If vault-pricing is false, then this is useless
 personal-storage:
-
-  purchaseable: true  # If this is true, then players can buy a personal storage and upgrade it with money
-
   price: 500
-
   upgrade-multiplier: 1.2 # The upgrade cost is calculated by (original price) * (upgrade multiplier) ^ (num. of rows)
 
 chunk-storage:
-
-  purchaseable: true
-
   price: 200
-
   upgrade-multiplier: 1.05
 
 group-storage:
-
-    purchaseable: true
-
     price: 400
-
     upgrade-multiplier: 1.1
 
-vouchers:
+towny: false
 
-  can-create-storages: true
 

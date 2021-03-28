@@ -2,7 +2,7 @@ package com.somemone.storageplus.command;
 
 import com.somemone.storageplus.StoragePlus;
 import com.somemone.storageplus.storage.GroupStorage;
-import com.somemone.storageplus.util.SearchHandler;
+import com.somemone.storageplus.util.FileHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -35,9 +35,7 @@ public class MyTabCompleter implements org.bukkit.command.TabCompleter {
                         list.addAll(Arrays.asList("ps", "cs", "gs"));
                         break;
                     case "getplayers":
-                        for (GroupStorage gs : StoragePlus.groupStorages) {
-                            list.add(gs.name);
-                        }
+                        list = FileHandler.getGroupNames();
                         break;
                 }
             } else if (args.length == 3) {
@@ -51,9 +49,7 @@ public class MyTabCompleter implements org.bukkit.command.TabCompleter {
                         list.add("here");
                         break;
                     case "gs":
-                        for (GroupStorage gs : StoragePlus.groupStorages) {
-                            list.add(gs.name);
-                        }
+                        list = FileHandler.getGroupNames();
                         break;
                 }
             }
@@ -68,27 +64,7 @@ public class MyTabCompleter implements org.bukkit.command.TabCompleter {
         } else if (command.getAliases().contains("gs")) {
             if (args.length == 1) {
                 list.addAll(Arrays.asList("create", "upgrade", "invite", "remove", "leave", "setowner", "delete"));
-            } else if (args.length == 2) {
-                switch (args[0]) {
-                    case "invite":
-                        list = findGroupStorages(player);
-                        break;
-                    case "remove":
-                        list = findGroupStorages(player);
-                        break;
-                    case "setowner":
-                        list = findGroupStorages(player);
-                        break;
-                    case "delete":
-                        list = findGroupStorages(player);
-                        break;
-                    case "upgrade":
-                        list = findGroupStorages(player);
-                        break;
-                    case "leave":
-                        list = findGroupStorages(player);
-                        break;
-                }
+            }
             } else if (args.length == 3) {
                 switch (args[0]) {
                     case "invite":
@@ -97,30 +73,15 @@ public class MyTabCompleter implements org.bukkit.command.TabCompleter {
                         }
                         break;
                     case "remove":
-                        SearchHandler searchHandler = new SearchHandler();
-                        list = findPlayersInStorages(searchHandler.searchGroupStorage(args[1]));
+                        list = findPlayersInStorages(FileHandler.loadGroupStorage(args[2]));
                         break;
                     case "setowner":
-                        SearchHandler searchHandlera = new SearchHandler();
-                        list = findPlayersInStorages(searchHandlera.searchGroupStorage(args[1]));
+                        list = findPlayersInStorages(FileHandler.loadGroupStorage(args[2]));
                         break;
                 }
-            }
         }
 
         return list;
-    }
-
-    public List<String> findGroupStorages (Player player) {
-        List<String> list = new ArrayList<>();
-
-        SearchHandler search = new SearchHandler();
-        for (GroupStorage gs : search.searchGroupStorages(player.getUniqueId())) {
-            list.add(gs.name);
-        }
-
-        return list;
-
     }
 
     public List<String> findPlayersInStorages (GroupStorage gs) {

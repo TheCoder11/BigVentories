@@ -18,6 +18,10 @@ public class ChunkStorage extends Storage {
         this.z = z;
     }
 
+    public ChunkStorage() {
+        super(1, true);
+    }
+
     public ChunkStorage(int rows, UUID uuid, ArrayList<ItemStack> items, int x, int z) {
         super(rows, uuid, items);
 

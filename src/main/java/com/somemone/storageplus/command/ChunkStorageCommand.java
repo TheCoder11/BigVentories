@@ -3,6 +3,7 @@ package com.somemone.storageplus.command;
 import com.somemone.storageplus.StoragePlus;
 import com.somemone.storageplus.storage.ChunkStorage;
 import com.somemone.storageplus.storage.OpenStorage;
+import com.somemone.storageplus.util.FileHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,35 +21,24 @@ public class ChunkStorageCommand  implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
-            if (args.length == 0) {
-                if (StoragePlus.chunkStorages.size() > 0) {
+            ChunkStorage cs = FileHandler.loadChunkStorage(player.getLocation().getChunk().getX(), player.getLocation().getChunk().getZ());
 
-                    for (ChunkStorage cs : StoragePlus.chunkStorages) {
+            if (!cs.isEmpty) {
+                if (args.length == 0) {
+                    for (OpenStorage os : StoragePlus.openStorages) {
+                        if (os.uuid.equals(cs.uuid)) {
 
-                        if (cs.checkChunk(player.getLocation().getChunk())) {
-
-                            for (OpenStorage os : StoragePlus.openStorages) {
-                                if (os.uuid == cs.uuid) {
-
-                                    player.openInventory(os.inventory.get(0));
-                                    return true;
-
-                                }
-                            }
-
-
-                            ArrayList<Inventory> inventories = cs.buildInventories();
-                            OpenStorage os = new OpenStorage(inventories, cs.uuid, true);
-                            StoragePlus.openStorages.add(os);
                             player.openInventory(os.inventory.get(0));
-
                             return true;
 
                         }
-
                     }
 
-                    sender.sendMessage(ChatColor.RED + "There is no Chunk Storage in this zone!");
+                    ArrayList<Inventory> inventories = cs.buildInventories();
+                    OpenStorage os = new OpenStorage(inventories, cs.uuid, true);
+                    StoragePlus.openStorages.add(os);
+                    player.openInventory(os.inventory.get(0));
+
                     return true;
 
                 }
@@ -56,64 +46,32 @@ public class ChunkStorageCommand  implements CommandExecutor {
 
             switch (args[0]) {
                 case "create":
-
-                    ChunkStorage newCS = new ChunkStorage(1, player.getLocation().getChunk().getX(), player.getLocation().getChunk().getZ());
-
-                    for (ChunkStorage cs : StoragePlus.chunkStorages) {
-
-                        if (cs.x == newCS.x && cs.z == newCS.z) {
-
-                            sender.sendMessage(ChatColor.RED + "A Chunk Storage already exists in this area!");
-                            return true;
-
-                        }
-
-                    }
-
-                    if (StoragePlus.configHandler.getPersonalStoragePrice(1) < StoragePlus.getEcon().getBalance(player) && StoragePlus.configHandler.getPersonalStoragePrice(1) != 0) {
-                        StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getPersonalStoragePrice(1));
-                        StoragePlus.chunkStorages.add(newCS);
-                        sender.sendMessage(ChatColor.GREEN + "Chunk Storage successfully created!");
+                    if (StoragePlus.activeConfig.validateStorage(player, 1)) {
+                        cs = new ChunkStorage(1, player.getLocation().getChunk().getX(), player.getLocation().getChunk().getZ());
+                        FileHandler.saveStorage(cs);
+                        sender.sendMessage(ChatColor.GREEN + "Chunk Storage has been created");
                     } else {
-                        sender.sendMessage(ChatColor.RED + "Insufficient Funds");
+                        sender.sendMessage(ChatColor.RED + "You don't have enough money!");
                     }
 
                     break;
 
                 case "upgrade":
+                    if (!cs.isEmpty) {
+                        int rowsToAdd = 1;
+                        try {
+                            rowsToAdd = Integer.parseInt(args[1]);
+                        } catch (NumberFormatException | NullPointerException ignored) { }
 
-                    // NOTE: Must add Vault+Config!
-
-                    int rowsToAdd = 1;
-                    try {
-                        rowsToAdd = Integer.parseInt(args[1]);
-                    } catch (NumberFormatException | ArrayIndexOutOfBoundsException ignored) {
-                    }
-
-                    if (StoragePlus.chunkStorages.size() > 0) {
-
-                        for (ChunkStorage upcs : StoragePlus.chunkStorages) {
-
-                            if (upcs.checkChunk(player.getLocation().getChunk())) {
-
-                                if (StoragePlus.getEcon().getBalance(player) > StoragePlus.configHandler.getChunkStoragePrice(rowsToAdd) && StoragePlus.configHandler.getChunkStoragePrice(1) > 0) {
-                                    StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getChunkStoragePrice(rowsToAdd));
-                                    upcs.addRows(rowsToAdd);
-                                    sender.sendMessage(ChatColor.GREEN + "Chunk Storage successfully upgraded!");
-                                } else {
-                                    sender.sendMessage(ChatColor.RED + "Insufficient Funds");
-                                }
-
-                                return true;
-                            }
-
+                        if (StoragePlus.activeConfig.validateStorage(player, rowsToAdd)) {
+                            cs.addRows(rowsToAdd);
+                            FileHandler.saveStorage(cs);
+                            sender.sendMessage(ChatColor.GREEN + "Personal Storage successfully upgraded!");
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "You don't have enough money!");
                         }
-
-                        sender.sendMessage(ChatColor.RED + "There is no Chunk Storage in this zone! Create one first!");
-
                     }
                     break;
-
             }
 
         } else {

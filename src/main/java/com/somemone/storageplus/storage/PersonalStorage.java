@@ -23,6 +23,10 @@ public class PersonalStorage extends Storage {
         this.owner = owner;
     }
 
+    public PersonalStorage() {
+        super(1, true);
+    }
+
     public PersonalStorage(int rows, UUID uuid, UUID owner, ArrayList<ItemStack> items) {
         super(rows, uuid, items);
 

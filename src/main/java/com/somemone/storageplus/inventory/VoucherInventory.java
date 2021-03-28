@@ -4,7 +4,7 @@ import com.somemone.storageplus.StoragePlus;
 import com.somemone.storageplus.storage.ChunkStorage;
 import com.somemone.storageplus.storage.GroupStorage;
 import com.somemone.storageplus.storage.PersonalStorage;
-import com.somemone.storageplus.util.SearchHandler;
+import com.somemone.storageplus.util.FileHandler;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,9 +70,8 @@ public class VoucherInventory {
         paper.setItemMeta(paperMeta);
         inv.setItem(4, paper);
 
-        SearchHandler searchHandler = new SearchHandler();
-        PersonalStorage ps = searchHandler.searchPersonalStorage(user);
-        if (ps != null) {
+        PersonalStorage ps = FileHandler.loadPersonalStorage(user.getUniqueId());
+        if (!ps.isEmpty) {
 
             ItemStack enderChest = new ItemStack(Material.ENDER_CHEST);
             ItemMeta psMeta = enderChest.getItemMeta();
@@ -92,8 +92,8 @@ public class VoucherInventory {
             inv.setItem(36, createPersonal);
         }
 
-        ChunkStorage cs = searchHandler.searchChunkStorage(chunk);
-        if (cs != null) {
+        ChunkStorage cs = FileHandler.loadChunkStorage(chunk.getX(), chunk.getZ());
+        if (!cs.isEmpty) {
 
             ItemStack grassBlock = new ItemStack(Material.GRASS_BLOCK);
             ItemMeta gbMeta = grassBlock.getItemMeta();
@@ -119,7 +119,7 @@ public class VoucherInventory {
         int upgradeOne = 29;
         int upgradeAll = 20;
 
-        for (GroupStorage gs : searchHandler.searchGroupStorages(user.getUniqueId())) {
+        for (GroupStorage gs : FileHandler.loadAllowedGroupStorages(user.getUniqueId())) {
 
             ItemStack groupStorage = new ItemStack(Material.CHEST);
             ItemMeta gsMeta = groupStorage.getItemMeta();

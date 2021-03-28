@@ -24,102 +24,56 @@ public class PersonalStorageCommand implements CommandExecutor {
 
             PersonalStorage ps = FileHandler.loadPersonalStorage(player.getUniqueId());
 
-            if (ps == null) return false;
-
-            if (args.length == 0) {
-                if (StoragePlus.personalStorages.size() == 0) return false;
-
-                for (PersonalStorage ps : StoragePlus.personalStorages) {
-
-                    sender.sendMessage(ps.owner.toString());
-                    sender.sendMessage(player.getUniqueId().toString());
-
-                    if (ps.owner.equals(player.getUniqueId())) {
-
-                        // Check for open inventory
-
-                        if (StoragePlus.openStorages.size() > 0) {
-                            for (OpenStorage os : StoragePlus.openStorages) {
-                                if (os.uuid == ps.uuid) {
-                                    player.openInventory(os.inventory.get(0));
-
-                                    return true;
-                                }
-                            }
-                        }
-
-                        ArrayList<Inventory> inventories = ps.buildInventories();
-
-                        OpenStorage openStorage = new OpenStorage(inventories, ps.uuid, true);
-
-                        StoragePlus.openStorages.add(openStorage);
-
-                        player.openInventory(openStorage.inventory.get(0));
-
-                        return true;
-
-                    }
-
-
-                }
+            if (args.length == 0 && ps.isEmpty) {
                 sender.sendMessage(ChatColor.RED + "You do not own a Personal Storage!");
                 return true;
             }
 
-            switch (args[0]) {
-                case "create":
+            if (args.length == 0) {
+                    if (StoragePlus.openStorages.size() > 0) {
+                        for (OpenStorage os : StoragePlus.openStorages) {
+                            if (os.uuid.equals(ps.uuid)) {
+                                player.openInventory(os.inventory.get(0));
 
-                    if (StoragePlus.personalStorages.size() > 0) {
-                        for (PersonalStorage ups : StoragePlus.personalStorages) {
-                            if (ups.owner.equals(player.getUniqueId())) {
-                                sender.sendMessage(ChatColor.RED + "You already have a personal storage!");
                                 return true;
                             }
                         }
                     }
 
-                    if (StoragePlus.configHandler.getPersonalStoragePrice(1) < StoragePlus.getEcon().getBalance(player) && StoragePlus.configHandler.getPersonalStoragePrice(1) != 0) {
-                        StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getPersonalStoragePrice(1));
-                        PersonalStorage cps = new PersonalStorage(1, player.getUniqueId());
-                        StoragePlus.personalStorages.add(cps);
+                    ArrayList<Inventory> inventories = ps.buildInventories();
+                    OpenStorage openStorage = new OpenStorage(inventories, ps.uuid, true);
+                    StoragePlus.openStorages.add(openStorage);
+                    player.openInventory(openStorage.inventory.get(0));
 
-                        sender.sendMessage(ChatColor.GREEN + "Personal Storage successfully created!");
+                    return true;
+            }
+
+            switch (args[0]) {
+                case "create":
+                    if (StoragePlus.activeConfig.validateStorage(player, 1)) {
+                        ps = new PersonalStorage(1, player.getUniqueId());
+                        FileHandler.saveStorage(ps);
+                        sender.sendMessage(ChatColor.GREEN + "Personal Storage Created!");
                     } else {
-                        sender.sendMessage(ChatColor.RED + "Insufficient funds!");
+                        sender.sendMessage(ChatColor.RED + "You don't have enough money!");
                     }
-
                     break;
-
                 case "upgrade":
-                    int rowsToAdd = 1;
-                    try {
-                        rowsToAdd = Integer.parseInt(args[1]);
-                    } catch (NumberFormatException | NullPointerException ignored) {
-                    }
+                    if (!ps.isEmpty) {
+                        int rowsToAdd = 1;
+                        try {
+                            rowsToAdd = Integer.parseInt(args[1]);
+                        } catch (NumberFormatException | NullPointerException ignored) { }
 
-                    if (StoragePlus.personalStorages.size() > 0) {
-
-                        for (PersonalStorage upps : StoragePlus.personalStorages) {
-
-                            if (upps.owner.equals(player.getUniqueId())) {
-
-                                if (StoragePlus.configHandler.getPersonalStoragePrice(rowsToAdd) < StoragePlus.getEcon().getBalance(player) && StoragePlus.configHandler.getPersonalStoragePrice(1) != 0) {
-                                    StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getPersonalStoragePrice(rowsToAdd));
-                                    upps.addRows(rowsToAdd);
-                                    sender.sendMessage(ChatColor.GREEN + "Personal Storage successfully upgraded!");
-                                } else {
-                                    sender.sendMessage(ChatColor.RED + "Insufficient funds!");
-                                }
-
-                            }
-
+                        if (StoragePlus.activeConfig.validateStorage(player, rowsToAdd)) {
+                            ps.addRows(rowsToAdd);
+                            FileHandler.saveStorage(ps);
+                            sender.sendMessage(ChatColor.GREEN + "Personal Storage successfully upgraded!");
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "You don't have enough money!");
                         }
-
                     }
-
                     break;
-
-
             }
         } else {
             sender.sendMessage("This is for players only!");

@@ -3,6 +3,8 @@ package com.somemone.storageplus.command;
 import com.somemone.storageplus.StoragePlus;
 import com.somemone.storageplus.storage.GroupStorage;
 import com.somemone.storageplus.storage.OpenStorage;
+import com.somemone.storageplus.util.FileHandler;
+import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -24,80 +26,50 @@ public class GroupStorageCommand implements CommandExecutor {
             if (args.length == 0) return false;
 
             if (args.length == 1) {
-                if (StoragePlus.groupStorages.size() > 0) {
+                GroupStorage gs = FileHandler.loadGroupStorage(args[0]);
+                for (GroupStorage gls : FileHandler.loadAllowedGroupStorages(player.getUniqueId())) {
+                    if (gls.name.equals(gs.name)) {
+                            if (StoragePlus.openStorages.size() > 0) {
+                                for (OpenStorage os : StoragePlus.openStorages) {
+                                    if (os.uuid.equals(gs.uuid)) {
+                                        player.openInventory(os.inventory.get(0));
 
-                    for (GroupStorage cs : StoragePlus.groupStorages) {
-
-                        if (cs.name.equals(args[0]) && cs.accessList.contains(player.getUniqueId())) {
-
-                            //Check if inventory is open
-
-                            for (OpenStorage os : StoragePlus.openStorages) {
-
-                                if (os.uuid == cs.uuid) {
-                                    player.openInventory(os.inventory.get(0));
-                                    return true;
+                                        return true;
+                                    }
                                 }
-
                             }
 
-                            ArrayList<Inventory> inventories = cs.buildInventories();
-                            OpenStorage os = new OpenStorage(inventories, cs.uuid, true);
-
-                            StoragePlus.openStorages.add(os);
-
-                            player.openInventory(os.inventory.get(0));
+                            ArrayList<Inventory> inventories = gs.buildInventories();
+                            OpenStorage openStorage = new OpenStorage(inventories, gs.uuid, true);
+                            StoragePlus.openStorages.add(openStorage);
+                            player.openInventory(openStorage.inventory.get(0));
 
                             return true;
-
-                        }
-
                     }
-
-                    sender.sendMessage(ChatColor.RED + "You do not have access to this inventory!");
-
                 }
+                sender.sendMessage(ChatColor.RED + "You do not have access to this storage!");
+
             }
 
             switch (args[0]) {
-
                 case "upgrade":  // /gs upgrade group-name 3
+                    if (args.length != 3) return false;
 
-                    if (true) {
-                        sender.sendMessage(ChatColor.GOLD + "This command has been temporarily disabled!");
-                        return true;
-                    }
+                    GroupStorage gs = FileHandler.loadGroupStorage(args[1]);
 
-                    int rowsToAdd = 1;
-                    try {
-                        rowsToAdd = Integer.parseInt(args[2]);
-                    } catch (NumberFormatException | NullPointerException ignored) {
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        return false;
-                    }
+                    if (!gs.isEmpty) {
+                        int rowsToAdd = 1;
+                        try {
+                            rowsToAdd = Integer.parseInt(args[2]);
+                        } catch (NumberFormatException | NullPointerException ignored) { }
 
-                    if (StoragePlus.groupStorages.size() > 0) {
-
-                        for (GroupStorage upgs : StoragePlus.groupStorages) {
-
-                            if (upgs.name.equals(args[1])) {
-                                if (StoragePlus.configHandler.getGroupStoragePrice(rowsToAdd) < StoragePlus.getEcon().getBalance(player) && StoragePlus.configHandler.getGroupStoragePrice(rowsToAdd) != 0) {
-                                    StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getGroupStoragePrice(rowsToAdd));
-                                    upgs.addRows(rowsToAdd);
-                                    sender.sendMessage(ChatColor.GREEN + "Group Storage was upgraded!");
-
-                                    return true;
-                                } else {
-                                    sender.sendMessage(ChatColor.RED + "Insufficient funds!");
-                                }
-
-
-                            }
-
+                        if (StoragePlus.activeConfig.validateStorage(player, rowsToAdd)) {
+                            gs.addRows(rowsToAdd);
+                            FileHandler.saveStorage(gs);
+                            sender.sendMessage(ChatColor.GREEN + "Personal Storage successfully upgraded!");
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "You don't have enough money!");
                         }
-
-                        sender.sendMessage(ChatColor.RED + "There is no Chunk Storage in this zone! Create one first!");
-
                     }
                     break;
 
@@ -105,170 +77,118 @@ public class GroupStorageCommand implements CommandExecutor {
 
                     if (args.length == 3) {
 
-                        if (StoragePlus.groupStorages.size() > 0) {
+                        GroupStorage igs = FileHandler.loadGroupStorage(args[1]);
 
-                            if (Bukkit.getPlayer(args[2]) != null ) {
+                        if (!igs.isEmpty) {
+                            if (igs.owner.equals(player.getUniqueId())) {
 
-                                for (GroupStorage fgs : StoragePlus.groupStorages) {
-                                    if (fgs.name.equals(args[1])) {
-                                        if (fgs.owner == player.getUniqueId()) {
+                                Player requestedPlayer = Bukkit.getPlayer(args[2]);
+                                if (requestedPlayer == null) return false;
 
-                                            if (StoragePlus.getInvitedGroupStorages(Bukkit.getOfflinePlayer(args[2]).getUniqueId()) < StoragePlus.configHandler.getGroupStorageNum()) {
+                                if (FileHandler.loadAllowedGroupStorages(requestedPlayer.getUniqueId()).size() < StoragePlus.configHandler.getGroupStorageNum()) {
 
-                                                if (Bukkit.getOfflinePlayer(args[2]).isOnline()) {
+                                    if (StoragePlus.currentInvites.containsKey(requestedPlayer.getUniqueId())) {
+                                        sender.sendMessage(ChatColor.RED + "This player already has an invitation!");
+                                    } else {
+                                        sender.sendMessage(ChatColor.GREEN + args[2] + " was invited to the group!");
+                                        StoragePlus.currentInvites.put(requestedPlayer.getUniqueId(), igs.uuid);
 
-                                                    if (StoragePlus.currentInvites.containsKey(Bukkit.getPlayer(args[2]).getUniqueId())) {
-
-                                                        sender.sendMessage(ChatColor.RED + "This player already has an invitation!");
-
-                                                    } else {
-
-                                                        sender.sendMessage(ChatColor.GREEN + args[2] + " was invited to the Group!");
-                                                        StoragePlus.currentInvites.put(Bukkit.getPlayer(args[2]).getUniqueId(), fgs.uuid);
-
-
-                                                        Bukkit.getPlayer(args[2]).sendMessage("You have been invited to the group " + fgs.name + "! Use /staccept to accept this request");
-
-                                                    }
-
-                                                }
-                                            } else {
-                                                sender.sendMessage(ChatColor.RED + args[2] + " has too many group storages!");
-                                            }
-                                            return true;
-
-                                        } else {
-
-                                            sender.sendMessage(ChatColor.RED + "You do not have access to this storage!");
-
-                                        }
-
+                                        requestedPlayer.sendMessage("You have been invited to the group " + igs.name + "! Use /staccept to accept this request");
                                     }
                                 }
-                            } else {
-                                return false;
                             }
-                        }
 
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "");
+                        }
                     }
                     break;
                 case "create":   // /gs create group-name
+                    if (args.length != 2) return false;
 
-                    if (args.length == 2) {
-                        GroupStorage newGS = new GroupStorage(args[1], 1, player.getUniqueId());
-
-                        if (StoragePlus.groupStorages.size() > 0) {
-                            for (GroupStorage fgs : StoragePlus.groupStorages) {
-
-                                if (fgs.name.equals(args[1])) {
-
-                                    sender.sendMessage(ChatColor.RED + "A Group Storage with this name already exists!");
-                                    return true;
-
-                                }
-
-                            }
-                        }
-
-                        if (StoragePlus.getInvitedGroupStorages(player.getUniqueId()) < StoragePlus.configHandler.getGroupStorageNum() ) {
-                            StoragePlus.getEcon().withdrawPlayer(player, StoragePlus.configHandler.getGroupStoragePrice(1));
-                            StoragePlus.groupStorages.add(newGS);
-                            sender.sendMessage(ChatColor.GREEN + "Group Storage successfully created!");
-                        } else {
-                            sender.sendMessage(ChatColor.RED + "You have too many storages!");
-                        }
-
+                    if (!FileHandler.loadGroupStorage(args[1]).isEmpty) {
+                        sender.sendMessage(ChatColor.RED + "This storage already exists!");
+                        return true;
                     }
+
+                    if (StoragePlus.activeConfig.validateStorage(player, 1)) {
+                        GroupStorage cgs = new GroupStorage(args[1], 1, player.getUniqueId());
+                        FileHandler.saveStorage(cgs);
+                        sender.sendMessage(ChatColor.GREEN + "Group Storage successfully created!");
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "You don't have enough money!");
+                    }
+
                     break;
                 case "remove":   // /gs remove group-name player123
 
-                    if (args.length == 3) {
+                    if (args.length != 3) return false;
 
-                        if (StoragePlus.groupStorages.size() > 0) {
+                    GroupStorage rgs = FileHandler.loadGroupStorage(args[1]);
 
-                            for (GroupStorage fgs : StoragePlus.groupStorages) {
+                    if (rgs.isEmpty) return false;
 
-                                if (fgs.name.equals(args[1]) && fgs.owner == player.getUniqueId()) {
+                    if (rgs.owner.equals(player.getUniqueId())) {
 
-                                    if (fgs.accessList.contains(Bukkit.getOfflinePlayer(args[2]).getUniqueId())) {
-                                        fgs.accessList.remove(Bukkit.getOfflinePlayer(args[2]).getUniqueId());
-                                        sender.sendMessage(ChatColor.GREEN + args[1] + " has been removed from the Group!");
-                                        return true;
-                                    } else {
-                                        sender.sendMessage(ChatColor.RED + "Player not in group");
-                                        return true;
-                                    }
-
-                                } else {
-
-                                    sender.sendMessage(ChatColor.RED + "You do not have access to this storage!");
-
-                                }
-
-                            }
-
+                        if (rgs.accessList.contains(Bukkit.getOfflinePlayer(args[2]).getUniqueId())) {
+                            sender.sendMessage(String.valueOf(rgs.accessList.size()));
+                            rgs.accessList.remove(Bukkit.getOfflinePlayer(args[2]).getUniqueId());
+                            sender.sendMessage(String.valueOf(rgs.accessList.size()));
+                            sender.sendMessage(ChatColor.GREEN + args[2] + " has been removed from the group");
+                            return true;
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "Player not in group");
                         }
+
+                        FileHandler.saveStorage(rgs);
 
                     }
                     break;
                 case "setowner": // /gs setowner group-name player123
+                    if (args.length != 3) return false;
 
-                    if (args.length == 3) {
+                    GroupStorage sgs = FileHandler.loadGroupStorage(args[1]);
 
-                        if (StoragePlus.groupStorages.size() > 0) {
-                            for (GroupStorage fgs : StoragePlus.groupStorages) {
+                    if (sgs.isEmpty) return false;
 
-                                if (fgs.name.equals(args[1]) && fgs.owner.equals(player.getUniqueId())) {
-
-                                    fgs.owner = Bukkit.getOfflinePlayer(args[2]).getUniqueId();
-                                    sender.sendMessage(ChatColor.GREEN + args[2] + " is now the owner of the Group!");
-
-                                }
-
-                            }
+                    if (sgs.owner.equals(player.getUniqueId())) {
+                        if (sgs.accessList.contains( Bukkit.getOfflinePlayer(args[2]).getUniqueId() )) {
+                            sgs.owner = Bukkit.getOfflinePlayer(args[2]).getUniqueId();
+                            FileHandler.saveStorage(sgs);
                         }
-
                     }
                     break;
 
                 case "delete":
 
-                    if (args.length == 2) {
+                    if (args.length != 2) return false;
 
-                        if (StoragePlus.groupStorages.size() > 0) {
-                            GroupStorage storageToDelete = null;
-                            for (GroupStorage fgs : StoragePlus.groupStorages) {
+                    GroupStorage dgs = FileHandler.loadGroupStorage(args[2]);
 
-                                if (fgs.name.equals(args[1]) && fgs.owner.equals(player.getUniqueId())) {
-                                    storageToDelete = fgs;
-                                }
-                            }
-
-                            if (storageToDelete != null) {
-                                StoragePlus.groupStorages.remove(storageToDelete);
-                                sender.sendMessage(ChatColor.GREEN + storageToDelete.name + " successfully removed!");
-                            } else {
-                                sender.sendMessage(ChatColor.RED + "You do not have access to this group!");
-                            }
+                    if (!dgs.isEmpty) {
+                        if (dgs.owner.equals(player.getUniqueId())) {
+                            FileHandler.deleteStorage(dgs.uuid);
+                            sender.sendMessage(ChatColor.GREEN + "Group Storages successfully removed!");
                         }
-
                     }
+
                     break;
                 case "leave":
+                    if (args.length != 2) return false;
+                    GroupStorage lgs = FileHandler.loadGroupStorage(args[1]);
 
-                    if (args.length == 2) {
-
-                        if (StoragePlus.groupStorages.size() > 0) {
-                            for (GroupStorage gs : StoragePlus.groupStorages) {
-                                if (gs.name.equals(args[1]) && gs.accessList.contains( player.getUniqueId() )) {
-                                    gs.accessList.remove(player.getUniqueId());
-                                    sender.sendMessage(ChatColor.GREEN + "You have left " + gs.name);
-                                    return true;
-                                }
-                            }
-                            sender.sendMessage(ChatColor.RED + "You are not in this group!");
+                    if (!lgs.isEmpty) {
+                        if (lgs.owner.equals(player.getUniqueId())) {
+                            sender.sendMessage(ChatColor.GOLD + "You own this storage! Delete it to get rid of it!");
+                            return true;
+                        }
+                        if (lgs.accessList.contains(player.getUniqueId())) {
+                            lgs.accessList.remove(player.getUniqueId());
+                            sender.sendMessage(ChatColor.GREEN + "You have left this storage!");
+                            FileHandler.saveStorage(lgs);
                         }
                     }
+                    break;
             }
 
         } else {

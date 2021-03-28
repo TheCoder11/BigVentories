@@ -1,6 +1,7 @@
 package com.somemone.storageplus;
 
 import com.somemone.storageplus.command.*;
+import com.somemone.storageplus.config.ActiveConfig;
 import com.somemone.storageplus.listener.InventoryListener;
 import com.somemone.storageplus.listener.VoucherListener;
 import com.somemone.storageplus.storage.*;
@@ -26,6 +27,7 @@ import java.util.logging.Logger;
 public final class StoragePlus extends JavaPlugin {
 
     public static ArrayList<OpenStorage> openStorages;
+    public static ArrayList<OpenStorage> openManageStorages;
     public static ConfigHandler configHandler;
 
     // public static ArrayList<PersonalStorage> personalStorages;
@@ -41,6 +43,8 @@ public final class StoragePlus extends JavaPlugin {
 
     private static Economy econ = null;
 
+    public static ActiveConfig activeConfig;
+
     @Override
     public void onEnable() {
         
@@ -53,6 +57,8 @@ public final class StoragePlus extends JavaPlugin {
         configHandler = new ConfigHandler(getConfig());
         currentInvites = new HashMap<>();
         plugin = this;
+
+        activeConfig = new ActiveConfig(this.getConfig());
 
          getServer().getPluginManager().registerEvents(new InventoryListener(), this);
          getServer().getPluginManager().registerEvents(new VoucherListener(), this);
@@ -69,11 +75,9 @@ public final class StoragePlus extends JavaPlugin {
         getCommand("stadmin").setTabCompleter(new MyTabCompleter());
 
 
-
-
         if (!setupEconomy()) {
-            Logger.getLogger("Minecraft").severe("Bigventories disabled due to no Vault dependency found!");
-            getServer().getPluginManager().disablePlugin(this);
+            Logger.getLogger("Minecraft").severe("StoragePlus cannot find Vault dependency! Turning off Vault features");
+            activeConfig.setVaultEnabled(false);
             return;
         }
 
@@ -285,19 +289,6 @@ public final class StoragePlus extends JavaPlugin {
 
     public static Economy getEcon() {
         return econ;
-    }
-
-    public static int getInvitedGroupStorages ( UUID uuid ) {
-
-        int invited = 0;
-        for (GroupStorage gs : StoragePlus.groupStorages) {
-            if (gs.accessList.contains( uuid )) {
-                invited++;
-            }
-        }
-
-        return invited;
-
     }
 
     private boolean setupEconomy() {
