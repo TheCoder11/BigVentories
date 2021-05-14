@@ -40,7 +40,7 @@ public class GroupStorageCommand implements CommandExecutor {
                             }
 
                             ArrayList<Inventory> inventories = gs.buildInventories();
-                            OpenStorage openStorage = new OpenStorage(inventories, gs.uuid, true);
+                            OpenStorage openStorage = new OpenStorage(inventories, gs.uuid, true, gs.rows);
                             StoragePlus.openStorages.add(openStorage);
                             player.openInventory(openStorage.inventory.get(0));
 

@@ -52,7 +52,7 @@ public class AdminCommand implements CommandExecutor {
 
                                         sender.sendMessage(String.valueOf(ps.uuid));
                                         ArrayList<Inventory> inventories = ps.buildInventories();
-                                        OpenStorage openStorage = new OpenStorage(inventories, ps.uuid, true);
+                                        OpenStorage openStorage = new OpenStorage(inventories, ps.uuid, true, ps.rows);
                                         StoragePlus.openStorages.add(openStorage);
                                         player.openInventory(openStorage.inventory.get(0));
 
@@ -126,7 +126,7 @@ public class AdminCommand implements CommandExecutor {
                                     }
 
                                     ArrayList<Inventory> inventories = cs.buildInventories();
-                                    OpenStorage openStorage = new OpenStorage(inventories, cs.uuid, true);
+                                    OpenStorage openStorage = new OpenStorage(inventories, cs.uuid, true, cs.rows);
                                     StoragePlus.openStorages.add(openStorage);
                                     player.openInventory(openStorage.inventory.get(0));
 
@@ -175,7 +175,7 @@ public class AdminCommand implements CommandExecutor {
                                         }
 
                                         ArrayList<Inventory> inventories = gs.buildInventories();
-                                        OpenStorage openStorage = new OpenStorage(inventories, gs.uuid, true);
+                                        OpenStorage openStorage = new OpenStorage(inventories, gs.uuid, true, gs.rows);
                                         StoragePlus.openStorages.add(openStorage);
                                         player.openInventory(openStorage.inventory.get(0));
 

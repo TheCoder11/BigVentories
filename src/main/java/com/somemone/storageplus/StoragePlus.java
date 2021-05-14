@@ -3,6 +3,7 @@ package com.somemone.storageplus;
 import com.somemone.storageplus.command.*;
 import com.somemone.storageplus.config.ActiveConfig;
 import com.somemone.storageplus.listener.InventoryListener;
+import com.somemone.storageplus.listener.ManageListener;
 import com.somemone.storageplus.listener.VoucherListener;
 import com.somemone.storageplus.storage.*;
 import com.somemone.storageplus.util.ConfigHandler;
@@ -27,7 +28,6 @@ import java.util.logging.Logger;
 public final class StoragePlus extends JavaPlugin {
 
     public static ArrayList<OpenStorage> openStorages;
-    public static ArrayList<OpenStorage> openManageStorages;
     public static ConfigHandler configHandler;
 
     // public static ArrayList<PersonalStorage> personalStorages;
@@ -47,10 +47,7 @@ public final class StoragePlus extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        
-        //personalStorages = new ArrayList<>();
-        //chunkStorages = new ArrayList<>();
-        //groupStorages = new ArrayList<>();
+
         openStorages = new ArrayList<>();
         closedByPlugin = new ArrayList<>();
         dataFolder = this.getDataFolder();
@@ -62,6 +59,7 @@ public final class StoragePlus extends JavaPlugin {
 
          getServer().getPluginManager().registerEvents(new InventoryListener(), this);
          getServer().getPluginManager().registerEvents(new VoucherListener(), this);
+         getServer().getPluginManager().registerEvents(new ManageListener(), this);
 
          getCommand("pstorage").setExecutor(new PersonalStorageCommand());
          getCommand("cstorage").setExecutor(new ChunkStorageCommand());

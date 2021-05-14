@@ -35,7 +35,7 @@ public class ChunkStorageCommand  implements CommandExecutor {
                     }
 
                     ArrayList<Inventory> inventories = cs.buildInventories();
-                    OpenStorage os = new OpenStorage(inventories, cs.uuid, true);
+                    OpenStorage os = new OpenStorage(inventories, cs.uuid, true, cs.rows);
                     StoragePlus.openStorages.add(os);
                     player.openInventory(os.inventory.get(0));
 
@@ -43,6 +43,8 @@ public class ChunkStorageCommand  implements CommandExecutor {
 
                 }
             }
+
+            if (args.length == 0) return false;
 
             switch (args[0]) {
                 case "create":

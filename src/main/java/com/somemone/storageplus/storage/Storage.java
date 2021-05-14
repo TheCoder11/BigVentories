@@ -58,17 +58,17 @@ public class Storage {
     private void generateButtons() {
         prevButton = SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODY1MmUyYjkzNmNhODAyNmJkMjg2NTFkN2M5ZjI4MTlkMmU5MjM2OTc3MzRkMThkZmRiMTM1NTBmOGZkYWQ1ZiJ9fX0=");
         ItemMeta nBMeta = prevButton.getItemMeta();
-        nBMeta.setDisplayName(ChatColor.GREEN + "NEXT PAGE");
+        nBMeta.setDisplayName(ChatColor.RED + "PREVIOUS PAGE");
         prevButton.setItemMeta(nBMeta);
 
         nextButton = SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmEzYjhmNjgxZGFhZDhiZjQzNmNhZThkYTNmZTgxMzFmNjJhMTYyYWI4MWFmNjM5YzNlMDY0NGFhNmFiYWMyZiJ9fX0=");
         ItemMeta pBMeta = nextButton.getItemMeta();
-        pBMeta.setDisplayName(ChatColor.RED + "PREVIOUS PAGE");
+        pBMeta.setDisplayName(ChatColor.GREEN + "NEXT PAGE");
         nextButton.setItemMeta(pBMeta);
 
         glassPane = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
         ItemMeta gPMeta = glassPane.getItemMeta();
-        gPMeta.setDisplayName("");
+        gPMeta.setDisplayName(" ");
         glassPane.setItemMeta(gPMeta);
 
         manageButton = new ItemStack(Material.CRAFTING_TABLE);
@@ -117,7 +117,7 @@ public class Storage {
             inv.setItem( invSize - 8, glassPane);
             inv.setItem( invSize - 7, glassPane);
             inv.setItem( invSize - 6, prevButton);
-            inv.setItem( invSize - 5, manageButton);
+            inv.setItem( invSize - 5, glassPane);
             inv.setItem( invSize - 4, nextButton);
             inv.setItem( invSize - 3, glassPane);
             inv.setItem( invSize - 2, glassPane);

@@ -41,7 +41,7 @@ public class PersonalStorageCommand implements CommandExecutor {
                     }
 
                     ArrayList<Inventory> inventories = ps.buildInventories();
-                    OpenStorage openStorage = new OpenStorage(inventories, ps.uuid, true);
+                    OpenStorage openStorage = new OpenStorage(inventories, ps.uuid, true, ps.rows);
                     StoragePlus.openStorages.add(openStorage);
                     player.openInventory(openStorage.inventory.get(0));
 

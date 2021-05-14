@@ -6,6 +6,7 @@ import com.somemone.storageplus.util.FileHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 public class InventoryListener implements Listener {
 
@@ -27,8 +29,10 @@ public class InventoryListener implements Listener {
             ArrayList<Inventory> playerInventories = null;
             OpenStorage os = null;
 
+            if (event.getClickedInventory() == null) return;
+
             for (OpenStorage tos : StoragePlus.openStorages) {
-                if (tos.checkIfViewing((Player) event.getWhoClicked())) {
+                if (tos.checkIfViewingMain((Player) event.getWhoClicked())) {
 
                     os = tos;
                     playerInventories = os.inventory;
@@ -70,26 +74,40 @@ public class InventoryListener implements Listener {
                             Inventory selectedInventory = playerInventories.get(playerInventories.indexOf(event.getInventory()) - 1);
                             try {
                                 event.getWhoClicked().openInventory(selectedInventory);
-                            } catch (ArrayIndexOutOfBoundsException ignored) {
-                            }
+                            } catch (ArrayIndexOutOfBoundsException ignored) { }
                         }
 
 
                         event.setCancelled(true);
 
                     }
-
                     event.setCancelled(true);
-
                 } else if (event.getCurrentItem().equals(Storage.glassPane)) {
-
                     event.setCancelled(true);
-
                 } else if (event.getCurrentItem().equals(Storage.manageButton)) {
+                    /**
+                    if (event.getInventory().getSize() == 9) {
+                        event.getWhoClicked().sendMessage(ChatColor.GOLD + "This storage is empty!");
+                        return;
+                    }
 
-                    event.getWhoClicked().sendMessage(ChatColor.GOLD + "This feature hasn't been implemented yet!");
+                    StoragePlus.closedByPlugin.add((Player) event.getWhoClicked());
+                    os.itemDistribution = os.getItemDistribution();
+                    event.getWhoClicked().openInventory(os.itemDistribution.get(0));
                     event.setCancelled(true);
-
+                     **/
+                } else {
+                    if (event.getClickedInventory().equals(event.getInventory())) {
+                        if (os.quickTakeInventories.containsKey(event.getCurrentItem().getType())) {
+                            os.removeItemToInventory(event.getCurrentItem(), os.quickTakeInventories.get(event.getCurrentItem().getType()));
+                        }
+                    }
+                }
+            } else {
+                if (event.getClickedInventory().equals(event.getInventory())) {
+                    if (os.quickTakeInventories.containsKey(event.getCursor().getType())) {
+                        os.addItemToInventory(event.getCursor(), os.quickTakeInventories.get(event.getCursor().getType()));
+                    }
                 }
             }
         }
@@ -100,7 +118,7 @@ public class InventoryListener implements Listener {
 
         if (!(StoragePlus.closedByPlugin.contains(event.getPlayer()))) {
 
-            if (event.getView().getTitle().equals("Storage")) { // "Deconstructs" inventories to their
+            if (event.getView().getTitle().equals("Storage") || event.getView().getTitle().equals("Sorted Storage")) { // "Deconstructs" inventories to their
 
                 OpenStorage permStorage = null;
                 PersonalStorage ps = null;
@@ -108,7 +126,7 @@ public class InventoryListener implements Listener {
                 GroupStorage gs = null;
 
                 for (OpenStorage os : StoragePlus.openStorages) {
-                    if (os.checkIfViewing((Player) event.getPlayer())) {
+                    if (os.checkIfViewingAll((Player) event.getPlayer())) {
                         if (os.getViewers().size() == 1) {  // Player is the only viewer of the inventory
 
                             ps = FileHandler.loadPersonalStorageFromID(os.uuid);
@@ -127,46 +145,21 @@ public class InventoryListener implements Listener {
                     }
                 }
 
-                if (permStorage != null) {
-
-                    ArrayList<ItemStack> totalItems = new ArrayList<>();
-
-                    StoragePlus.openStorages.remove(permStorage);
+                if (permStorage == null) return;
+                ArrayList<ItemStack> totalItems = permStorage.getItemList(permStorage.inventory);
 
 
-                    for (Inventory inv : permStorage.inventory) {
-                        ArrayList<ItemStack> items = new ArrayList<>();
-                        if (inv.getContents().length > 0) {
-                            for (ItemStack item : inv.getContents()) {
-                                items.add(item);
-                            }
-                        }
-
-
-                        int removed = 0;
-                        while ( removed < Math.min( items.size(), 9 )) {
-                            items.remove(items.size() - 1);
-                            removed++;
-                        }
-
-                        items.removeAll(Collections.singleton(null));
-
-                        totalItems.addAll(items);
-                    }
-
-                    if (!ps.isEmpty) {
-                        ps.items = totalItems;
-                        FileHandler.saveStorage(ps);
-                    }
-                    if (!cs.isEmpty) {
-                        cs.items = totalItems;
-                        FileHandler.saveStorage(cs);
-                    }
-                    if (!gs.isEmpty) {
-                        gs.items = totalItems;
-                        FileHandler.saveStorage(gs);
-                    }
-
+                if (!ps.isEmpty) {
+                    ps.items = totalItems;
+                    FileHandler.saveStorage(ps);
+                }
+                if (!cs.isEmpty) {
+                    cs.items = totalItems;
+                    FileHandler.saveStorage(cs);
+                }
+                if (!gs.isEmpty) {
+                    gs.items = totalItems;
+                    FileHandler.saveStorage(gs);
                 }
 
             }
